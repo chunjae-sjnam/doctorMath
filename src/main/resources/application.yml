@@ -1,0 +1,35 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://doctor-dev.ck39dp9w2h39.ap-northeast-2.rds.amazonaws.com:3306/innodb
+    #    url: jdbc:mariadb://localhost:3306/innodb
+    username: admin
+    password: chunjae12#$
+
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+
+mybatis:
+  mapper-locations: mappers/*.xml
+  #type-aliases-package: com.example.onetab.mapper
+  #configuration:
+  #  cache-enabled: true
+  #  default-statement-timeout: 300
+  #  map-underscore-to-camel-case: true
+  #  use-generated-keys: true
+  configuration:
+    jdbc-type-for-null: varchar
+    call-setters-on-nulls: true
+
+
+
