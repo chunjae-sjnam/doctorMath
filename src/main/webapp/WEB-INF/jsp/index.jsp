@@ -4,6 +4,6 @@
 This is main
 <br>
 
-this value from DB
+this value from DB test
 <br>
 <input id="test" value="${testIndex}">
