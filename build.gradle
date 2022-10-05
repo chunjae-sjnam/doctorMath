@@ -13,10 +13,13 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
 }
 
 repositories {
     mavenCentral()
+    // aspose add
+    maven { url "https://repository.aspose.com/repo/" }
 }
 
 dependencies {
@@ -52,6 +55,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     implementation 'org.jsoup:jsoup:1.14.3'
+    // aspose add
+    //implementation ('com.aspose:aspose-html:20.12:jdk16')
+    implementation 'com.aspose:aspose-tex:22.4'
+    implementation 'com.github.albfernandez:juniversalchardet:2.4.0'
+
 }
 
 test {
