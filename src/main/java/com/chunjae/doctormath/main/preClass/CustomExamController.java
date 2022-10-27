@@ -2,26 +2,24 @@ package com.chunjae.doctormath.main.preClass;
 
 import com.aspose.tex.rendering.ImageDevice;
 import com.aspose.tex.rendering.PngSaveOptions;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.aspose.tex.*;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-
+import java.util.*;
 
 
 /**
@@ -32,23 +30,87 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("main")
 public class CustomExamController {
 
-    protected Logger logger = LoggerFactory.getLogger(CustomExamController.class);
+    @Autowired
+    private CustomExamService customExamService;
 
-    @RequestMapping("/preClass")
-    public String index(HttpSession session, HttpServletRequest request, Model model) throws Exception {
+    @RequestMapping("/data")
+    public String getData(HttpServletRequest request){
 
-        if (session.getAttribute("USER_ID") == null) {
-            return "redirect:main/login";
-        }
-
-
-        // test latex 이미지화
-        testLatextoPng();
-
-
-        String result = "main/preClass/customExam";
+        String result = "main/preClass/data";
 
         return result;
+    }
+
+    @RequestMapping(value = "/fileUpload2", method = RequestMethod.POST) //ajax에서 호출하는 부분
+    @ResponseBody
+    public String upload2(MultipartHttpServletRequest multipartRequest, HttpServletRequest request) throws Exception { //Multipart로 받는다.
+
+        Map<String, Object> uploadmap = customExamService.dragImage();
+
+        System.out.println("upload Controller !!! ");
+
+        Iterator<String> itr =  multipartRequest.getFileNames();
+
+        String filePath = "D:/tmp"; //설정파일로 뺀다.
+
+        while (itr.hasNext()) { //받은 파일들을 모두 돌린다.
+            MultipartFile mpf = multipartRequest.getFile(itr.next());
+
+            String originalFilename = mpf.getOriginalFilename(); //파일명
+
+            String fileFullPath = filePath+"/"+originalFilename; //파일 전체 경로
+
+            System.out.println("originalFilename = " + originalFilename);
+
+            //Map<String, Object> uploadLogomap = customExamService.updateLogoInfo();
+            customExamService.updateLogoInfo();
+
+            try {
+                //파일 저장
+                mpf.transferTo(new File(fileFullPath)); //파일저장 실제로는 service에서 처리
+
+                System.out.println("originalFilename => "+originalFilename);
+                System.out.println("fileFullPath => "+fileFullPath);
+
+            } catch (Exception e) {
+                System.out.println("postTempFile_ERROR======>"+fileFullPath);
+                e.printStackTrace();
+            }
+
+        }
+        return "success";
+    }
+
+    @RequestMapping(value = "/fileUpload") //ajax에서 호출하는 부분
+    @ResponseBody
+    public String upload(MultipartHttpServletRequest multipartRequest, HttpServletRequest request) { //Multipart로 받는다.
+
+        Iterator<String> itr =  multipartRequest.getFileNames();
+
+        String filePath = "D:/tmp"; //설정파일로 뺀다.
+
+        while (itr.hasNext()) { //받은 파일들을 모두 돌린다.
+            MultipartFile mpf = multipartRequest.getFile(itr.next());
+
+            String originalFilename = mpf.getOriginalFilename(); //파일명
+
+            String fileFullPath = filePath+"/"+originalFilename; //파일 전체 경로
+
+            try {
+                //파일 저장
+                mpf.transferTo(new File(fileFullPath)); //파일저장 실제로는 service에서 처리
+
+                System.out.println("originalFilename => "+originalFilename);
+                System.out.println("fileFullPath => "+fileFullPath);
+
+            } catch (Exception e) {
+                System.out.println("postTempFile_ERROR======>"+fileFullPath);
+                e.printStackTrace();
+            }
+
+        }
+        return "success";
+
     }
 
     public void testLatextoPng() throws Exception {
@@ -68,9 +130,9 @@ public class CustomExamController {
         String test4 = "\\documentclass[12pt]{article}\n" + "\\usepackage{amsmath}\n" + "\\begin{document}\n" + "\\begin{align}\n" + "<\\mu_{m}> = \\frac{\\sum_{-J}^{J}{-g\\mu_{\\beta}M_{J}B.\\exp{\\left(\\frac{-g\\mu_{\\beta}M_{J}B}{kT}\\right)}}}{\\sum_{-J}^{J}{\\exp{\\left(\\frac{-g\\mu_{\\beta}M_{J}B}{kT}\\right)}}}\n" + "\\end{align}\n" + "\\end{document}";
 
         String test5 = "<div class=\"contain-exam-body\">\n" + "\t\t\t\t<div class=\"box-exam\" style=\"height: 677.312px;\">\n" + "\t\t\t\t\t<div style=\"clear:both;\">\n" + "\t\t\t\t\t\t<div class=\"popcontents_itempool\" id=\"divItemPool\"><dl id=\"15553843\" data-index=\"0\" class=\"qubox half\" style=\"width: 100%;\"><dt><p></p></dt><dd style=\"line-height:130%; font-family: 돋움; font-size: 14px;\" class=\"itemlist\" name=\"divLML\" itemid=\"15553843\" groupid=\"NaN\" point=\"0\" hassound=\"false\" soundurl=\"\" itemcode=\"\" applyyear=\"2020\" pcode=\"\"><div style=\"line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divQuestion\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">다음은 어떤 고체의 에너지띠 구조에 대한 설명이다 </span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><div><table style=\"line-height:130%; font-family: 돋움; font-size: 14px;border-spacing:0px;border-collapse:collapse;width:100%;\" name=\"divTable\"><tbody><tr><td style=\"padding:4px;border-style:solid;border-color:Black;display: inline-block;border-width:1px 1px 1px 1px ;line-height:130%; font-family: 돋움; font-size: 14px;width:100%;\" name=\"divTableCell\"><div style=\"text-align: center; line-height: 130%; font-family: 돋움; font-size: 14px; position: relative;\" name=\"divParagraph\"><img style=\"width: 136px; height: 180px; line-height: 130%; font-family: 돋움; font-size: 14px; cursor: pointer;\" src=\"https://ai.ebs.co.kr/ebs/imageView/xip/ImageView?imgurl=resource/book/2763/15553843_000.png\"><span class=\"magnifier\" onclick=\"imageClickEvent($(this).siblings('img'));\"><em>확대보기</em><svg class=\"font-icons\"><use xlink:href=\"#svg-round-plus\"></use></svg></span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">  그림은 ⓐ </span><span style=\"white-space:pre-wrap;font-size:10px;text-decoration:underline;line-height:130%; font-family: 돋움; font-size: 14px;\">전자가 채워진 띠와 비어 있는 띠가 겹쳐진 고체</span><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">의 에너지띠 구조 를 나타낸 것이다. A 부분은 전자가 채워진 것을, B 부분은 전자가 비어 있는 것을 나타낸 것이다. </span></div></td></tr></tbody></table></div></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">이에 대한 설명으로 옳은 것만을 &lt;보기&gt;에서 있는 대로 고른 것은? </span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><div><table style=\"line-height:130%; font-family: 돋움; font-size: 14px;border-spacing:0px;border-collapse:collapse;width:100%;\" name=\"divTable\"><tbody><tr><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:0px 0px 1px 0px ;line-height:130%; font-family: 돋움; font-size: 14px;width:40.74074074074074%;\" name=\"divTableCell\" colspan=\"2\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td><td style=\"padding:4px;line-height:130%; font-family: 돋움; font-size: 14px;width:18.51851851851852%;\" name=\"divTableCell\" rowspan=\"2\"><div style=\"text-align:Center;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">&lt; 보 기 &gt;</span></div></td><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:0px 0px 1px 0px ;line-height:130%; font-family: 돋움; font-size: 14px;width:40.74074074074074%;\" name=\"divTableCell\" colspan=\"2\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td></tr><tr><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:1px 0px 0px 1px ;line-height:130%; font-family: 돋움; font-size: 14px;width:40.74074074074074%;\" name=\"divTableCell\" colspan=\"2\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:1px 1px 0px 0px ;line-height:130%; font-family: 돋움; font-size: 14px;width:57.407407407407405%;\" name=\"divTableCell\" colspan=\"2\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td></tr><tr><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:0px 0px 0px 1px ;line-height:130%; font-family: 돋움; font-size: 14px;width:1.8518518518518516%;\" name=\"divTableCell\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td><td style=\"padding:4px;line-height:130%; font-family: 돋움; font-size: 14px;width:96.29629629629629%;\" name=\"divTableCell\" colspan=\"3\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄱ. 반도체는 ⓐ보다 전기 전도성이 좋다.</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄴ. A에 있는 전자들의 에너지 준위는 모두 같다.</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄷ. 전자가 A에서 B로 전이할 때 에너지를 흡수한다.</span></div></td><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:0px 1px 0px 0px ;line-height:130%; font-family: 돋움; font-size: 14px;width:1.8518518518518516%;\" name=\"divTableCell\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td></tr><tr><td style=\"padding:4px;border-style:solid;border-color:Black;border-width:0px 1px 1px 1px ;line-height:130%; font-family: 돋움; font-size: 14px;width:100%;\" name=\"divTableCell\" colspan=\"5\"><div style=\"width:2px;height:18px;\" name=\"divParagraph\"></div></td></tr></tbody></table></div></div><ul><div style=\"text-align:right;font-size:12px;margin-bottom:12px;\"></div><li class=\"dontsplit odd\" iscorrectanswer=\"False\"><div style=\"width:20px; display:table-cell;\" class=\"numbering\">①</div><div style=\"display:table-cell;min-height:20px;padding-left:20px;height:22px;\" id=\"ddd\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄴ </span></div></div></li><li class=\"dontsplit\" iscorrectanswer=\"False\"><div style=\"width:20px; display:table-cell;\" class=\"numbering\">②</div><div style=\"display:table-cell;min-height:20px;padding-left:20px;height:22px;\" id=\"ddd\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄷ </span></div></div></li><li class=\"dontsplit odd\" iscorrectanswer=\"False\"><div style=\"width:20px; display:table-cell;\" class=\"numbering\">③</div><div style=\"display:table-cell;min-height:20px;padding-left:20px;height:22px;\" id=\"ddd\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄱ, ㄴ </span></div></div></li><li class=\"dontsplit\" iscorrectanswer=\"False\"><div style=\"width:20px; display:table-cell;\" class=\"numbering\">④</div><div style=\"display:table-cell;min-height:20px;padding-left:20px;height:22px;\" id=\"ddd\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄱ, ㄷ </span></div></div></li><li class=\"dontsplit odd\" iscorrectanswer=\"False\"><div style=\"width:20px; display:table-cell;\" class=\"numbering\">⑤</div><div style=\"display:table-cell;min-height:20px;padding-left:20px;height:22px;\" id=\"ddd\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄴ, ㄷ </span></div></div></li></ul><div><fieldset name=\"divExplanation\" class=\"explain\" id=\"Explanation\" style=\"display:none;\"><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-weight:Bold;font-size:10px;line-height:130%; font-family: 돋움; font-size: 14px;\">고체의 에너지띠</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">전자가 채워진 A는 원자가 띠이고, 전자가 비어 있는 B는 전도 띠이다. A와 B가 겹쳐진 도체는 원자가 띠와 전도띠가 띠 간격이 없이 서로 붙어 있어, 원자가 띠의 전자들이 약간의 에너지를 얻으면 쉽게 전도띠로 전이하여 자유롭게 이동할 수 있다. 이러한 자유 전자에 의해 전류가 쉽게 흐를 수 있다.</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄱ. 도체인 ⓐ는 반도체보다 전기 전도성이 좋다.</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄴ. 고체에서 전자의 에너지 준위는 미세하게 겹쳐 있어 거의 연속적으로 분포하는 에너지띠를 이루므로 A에 있는 전자의 에너지 준위는 모두 같지 않다.</span></div><div style=\"text-align:Justify;line-height:130%; font-family: 돋움; font-size: 14px;\" name=\"divParagraph\"><span style=\"white-space:pre-wrap;font-size:11px;line-height:130%; font-family: 돋움; font-size: 14px;\">ㄷ. 에너지 준위가 낮은 원자가 띠 A에서 에너지 준위가 높은 전도띠 B로 전자가 전이할 때에는 에너지를 흡수한다.</span></div></fieldset></div></div></dd></dl></div>\n" + "\t\t\t\t\t\t<div>\n" + "\t\t\t\t\t\t\t\n" + "\t\t\t\t\t\t</div>\n" + "\t\t\t\t\t</div>\n" + "\t\t\t\t\t<div id=\"MessageWindow\" style=\"width: 100%; height: 100%; left: 0px; top: 0px; background-color: white; text-align: center; visibility: initial; display: none;\"><div class=\"modal_wrap small modalLoading_wrap active\">    <section class=\"modal loading modal_notify\">        <div class=\"modal_container\">            <div class=\"modal_loading_content\">                <div class=\"lds-roller\">                    <div></div>                    <div></div>                    <div></div>                    <div></div>                    <div></div>                    <div></div>                    <div></div>                    <div></div>                </div>            </div>        </div>    </section></div></div>\n" + "\t\t\t\t</div>\n" + "\t\t\t\t<div class=\"box-skip\">\n" + "\t\t\t\t\t<button type=\"button\" class=\"btn-skip-exam\">문제 건너뛰기</button>\n" + "\t\t\t\t</div>\n" + "\t\t\t</div>";
-        String outputText = Jsoup.clean(htmlString, new Whitelist());
-        System.out.println(outputText);
-
+        //String outputText = Jsoup.clean(htmlString, new Whitelist());
+        //System.out.println(outputText);
+        String outputText = "";
         //outputText 인코딩 확인하기
 
 
@@ -149,7 +211,8 @@ public class CustomExamController {
     public void useJlatexToConvert() throws Exception {
         String htmlString = "" + "<div><h1>예제입니다.</h1><span>Convert HTML to Text</span>" + "<div><span>(2)<span> \\( \\frac{5}{16} \\quad a=2 b-1 \\)" + "                \\( y_{62}^{\\frac{3}{8}} \\)" + "                (4) \\( \\frac{7}{16} \\)" + "                (3) \\( \\frac{15}{32}=\\frac{2}{32} \\)" + "<div></div>";
 
-        String outputText = Jsoup.clean(htmlString, new Whitelist());
+        //String outputText = Jsoup.clean(htmlString, new Whitelist());
+        String outputText = "";
         System.out.println(outputText);
 
 
