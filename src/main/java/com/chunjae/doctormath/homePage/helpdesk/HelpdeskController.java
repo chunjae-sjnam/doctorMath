@@ -41,7 +41,7 @@ public class HelpdeskController {
 
     @RequestMapping("/notice")
     public String notice(HttpServletRequest request, @RequestParam Map<String, Object> param, Model model) throws Exception {
-        //System.out.println("start faq - 111 !!! ");
+        System.out.println("start notice - 111 !!! ");
         //System.out.println("controller param: " + param);
         System.out.println(request.getParameter("searchText"));
 
@@ -51,8 +51,24 @@ public class HelpdeskController {
         System.out.println(noticemap);
         model.addAttribute("data", noticemap);
         model.addAttribute("searchTxt", request.getParameter("searchText"));
+        model.addAttribute("searchType", request.getParameter("searchType"));
 
         String result = "homePage/helpdesk/notice";
+
+        return result;
+    }
+
+    @RequestMapping("/noticeDetail")
+    public String noticeDetail(HttpServletRequest request, @RequestParam Map<String, Object> param, Model model) throws Exception {
+        System.out.println("noticeDetail - !!! ");
+
+        Map<String, Object> noticemap = helpdeskService.noticeDetail(param);
+
+        System.out.println(noticemap);
+        model.addAttribute("data", noticemap);
+        model.addAttribute("searchTxt", request.getParameter("searchText"));
+
+        String result = "homePage/helpdesk/noticeDetail";
 
         return result;
     }

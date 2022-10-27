@@ -11,4 +11,6 @@ public interface HelpdeskMapper {
     public List<Map<String, Object>> faqList(Map<String, Object> param) throws Exception;
 
     public List<Map<String, Object>> noticeList(Map<String, Object> param) throws Exception;
+
+    public Map<String,Object> noticeDetail(Map<String, Object> param) throws Exception;
 }

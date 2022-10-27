@@ -14,15 +14,41 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>FAQ</title>
+    <title>공지사항</title>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.js"></script>
 </head>
+<script>
+    $( document ).ready(function() {
+        console.log( "ready!" );
+        //$('#searchType').prop('checked', true)
+/*
+        let checkList = $('input[type="checkbox"][name="searchType"]').prop('checked');
+        console.log(checkList);
+
+        if (checkList) {
+            console.log(checkList, '체크됨');
+        } else {
+            console.log(checkList, '체크해제됨');
+            $('#searchType1').prop('checked', true)
+        }
+
+
+        $('input[type="checkbox"][name="searchType"]').click(function(){
+            if($(this).prop('checked')){
+                $('input[type="checkbox"][name="searchType"]').prop('checked',false);
+                $(this).prop('checked',true);
+            }
+        });
+
+ */
+    });
+</script>
 <body>
 <h1> 공지사항 </h1>
-<form name="searchForm" action="faq" method="POST">
-<input type="checkbox" name="chk[]" value="title" > 제목
-<input type="checkbox" name="chk[]" value="content" > 내용
-<input type="checkbox" name="chk[]" value="title_content" checked> 제목+내용
+<form name="searchForm" action="notice" method="POST">
+<input type="checkbox" name="searchType" id="searchType1" value="title" checked> 제목
+<input type="checkbox" name="searchType" id="searchType2" value="content" > 내용
+<input type="checkbox" name="searchType" id="searchType3" value="title_content" > 제목+내용
 <input type="text" name="searchText" placeholder="검색어를 입력하시오" value="${data.searchTxt}">
 <input type="submit" name="search" value="검색">
 </form>
@@ -59,7 +85,7 @@
     <tr>
         <td class="tg-0lax">공지사항</td>
         <td class="tg-0lax">${list.Seq}</td>
-        <td class="tg-0lax"><a href="/noticeDetail">${list.Title}</a></td>
+        <td class="tg-0lax"><a href="noticeDetail?id=${list.Seq}">${list.Title}</a></td>
         <td class="tg-0lax">${list.CreDate}</td>
 
     </tr>

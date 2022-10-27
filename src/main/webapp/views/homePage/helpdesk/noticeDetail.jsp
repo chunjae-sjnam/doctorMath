@@ -14,23 +14,35 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>FAQ</title>
+    <title>공지사항 - 상세</title>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.js"></script>
 </head>
 <body>
 <h1> 공지사항 - 상세 </h1>
-<form name="searchForm" action="faq" method="POST">
-<input type="checkbox" name="chk[]" value="title" > 제목
-<input type="checkbox" name="chk[]" value="content" > 내용
-<input type="checkbox" name="chk[]" value="title_content" checked> 제목+내용
-<input type="text" name="searchText" placeholder="검색어를 입력하시오" value="${data.searchTxt}">
-<input type="submit" name="search" value="검색">
-</form>
-<br><br><br>
-<c:forEach var="list" items="${data.list}" varStatus="status">
-    <h3>Q. ${list.Title}</h3> <br>
-    <h5>A. ${list.Content}</h5><br>
-    <br><br>
-</c:forEach>
+<div>
+    <table>
+        <tr>
+            <td>[공지사항] ${data.list.Title} |</td>
+            <td>날짜 ${data.list.CreDate} </td>
+        </tr>
+    </table>
+    <br><br><br><br>
+
+    <table>
+        <tr>
+            <td>${data.list.Content} </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            첨부파일:
+        </tr>
+    </table>
+</div>
+
+<div align="center">
+    <a href="notice"><h3>목록</h3></a>
+</div>
 </body>
 </html>

@@ -6,21 +6,45 @@
         select *
         from CMU_FAQ cf
         where seq in ('3', '4', '5')
+        <!--
         <if test='"" neq searchTxt and searchTxt != null'>
             AND (Title LIKE CONCAT('%', #{searchTxt}, '%') or Content LIKE CONCAT('%', #{searchTxt}, '%'))
         </if>
+        -->
+        <choose>
+            <when test='searchType eq "title" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "content" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "title_content" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+        </choose>
     </select>
 
     <select id="noticeList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
         select *
         from CMU_NOTICE cn
-
-        /*where seq in ('3', '4', '5')*/
-        <if test='"" neq searchTxt and searchTxt != null'>
-            /*AND (Title LIKE CONCAT('%', #{searchTxt}, '%') or Content LIKE CONCAT('%', #{searchTxt}, '%'))*/
-            WHERE (Title LIKE CONCAT('%', #{searchTxt}, '%') or Content LIKE CONCAT('%', #{searchTxt}, '%'))
-        </if>
+        <choose>
+            <when test='searchType eq "title" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "content" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "title_content" and searchTxt != null'>
+                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+        </choose>
         limit 20
+    </select>
+
+    <select id="noticeDetail" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select *
+        from CMU_FAQ cf
+        where seq = #{id}
     </select>
 
 
