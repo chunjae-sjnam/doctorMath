@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.chunjae.doctormath.main.operation.StudentMapper'>
+
+    <select id="getList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+        SELECT
+            A.HakwonCode,
+            A.StudentCode,
+            A.Name,
+            A.Gender,
+            CASE A.Curri WHEN 'E' THEN '초' WHEN 'M' THEN '중' ELSE '고' END AS Curri,
+            A.Grade,
+            CASE A.Status WHEN 'P' THEN '휴원' WHEN 'O' THEN '퇴원' ELSE '재원' END AS Status,
+            D.UserID,
+            C.SchoolName,
+            CONVERT(A.SHtell, varchar(20)) AS SHtell,
+            CONVERT(A.PHtell, varchar(20)) AS PHtell,
+            A.Curri,
+            A.Status
+        FROM MEM_Student AS A
+        LEFT JOIN COM_School AS C ON (A.School = C.Seq)
+        LEFT JOIN MEM_Member D ON A.StudentCode = D.CODE
+        WHERE 1=1
+        AND A.HakwonCode = #{HakwonCode}
+        AND A.Status != 'W'
+        <if test='"" neq TeacherCode and TeacherCode != null'>
+        AND A.TeacherCode = #{TeacherCode}
+        </if>
+        <if test='"" neq Name and Name != null'>
+        AND A.Name LIKE CONCAT('%',#{Name},'%')
+        </if>
+        <if test='"" neq Curri and Curri != null'>
+        AND A.Curri = #{Curri}
+        </if>
+        <if test='"" neq Grade and Grade != null'>
+        AND A.Grade = #{Grade}
+        </if>
+        <if test='"" neq Status and Status != null'>
+        AND A.Status = #{Status}
+        </if>
+        <if test='"" neq SHtell and SHtell != null'>
+        AND A.SHtell = #{SHtell}
+        </if>
+        <if test='"" neq ClassCode and ClassCode != null'>
+        AND A.ClassCode = #{ClassCode}
+        </if>
+    </select>
+
+    <select id="getDetailList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+        SELECT
+            A.HakwonCode,
+            A.StudentCode,
+            A.Gender,
+            A.School,
+            A.Grade,
+            A.Curri,
+            A.TeacherCode,
+            A.Memo,
+            A.Name,
+            A.ClassCode,
+            B.HakwonName,
+            B.HakwonLogo,
+            CONVERT(B.Tell, varchar(20)) AS Tell,
+            CONVERT(A.SHtell, varchar(20)) AS SHtell,
+            CONVERT(A.PHtell, varchar(20)) AS PHtell,
+            A.PostNum,
+            A.Addr1,
+            C.SchoolName,
+            A.Status,
+            A.StudyGrade,
+            A.StudyGubun,
+            A.Email,
+            DATE_FORMAT(A.Birth, '%Y-%m-%d') AS Birth,
+            DATE_FORMAT(A.CreDate, '%Y-%m-%d') AS CreDate,
+            D.UserID,
+            D.ParentID
+        FROM
+            MEM_Student AS A
+            INNER JOIN MEM_Hakwon B ON A.HakwonCode = B.HakwonCode
+            LEFT JOIN  COM_School AS C ON (A.School = C.Seq)
+            LEFT JOIN MEM_Member D ON A.StudentCode = D.code
+        Where 1=1
+        <if test='"" neq StudentCode and StudentCode != null'>
+        AND A.StudentCode = #{StudentCode}
+        </if>
+    </select>
+    
+    <update id="updateList" parameterType="java.util.LinkedHashMap">
+        UPDATE
+            MEM_Student
+        SET
+            Name = #{Name},
+            Curri = #{Curri},
+            Grade = #{Grade},
+            Status = #{Status},
+            SHtell = #{SHtell},
+            PHtell = #{PHtell},
+            Email = #{Email},
+            PostNum = #{PostNum},
+            Addr1 = #{Addr1},
+            Birth = #{Birth},
+            CreDate = #{CreDate},
+            Memo = #{Memo}
+        WHERE StudentCode = #{StudentCode}
+    </update>
+</mapper>
