@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.chunjae.doctormath.main.preclass.CustomExamMapper'>
+
+
+    <select id="dragImage" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        SELECT userid, name
+        FROM tmember
+        WHERE userid='test'
+    </select>
+
+    <update id="updateLogoInfo" parameterType='java.util.LinkedHashMap'>
+        update thakwon set logo_image='test333.jpeg' where userid='test22'
+    </update>
+
+
+
+</mapper>

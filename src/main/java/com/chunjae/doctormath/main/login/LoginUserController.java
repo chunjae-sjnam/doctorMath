@@ -15,6 +15,9 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * 메인>로그인
+ */
 @Controller
 @RequestMapping("main")
 public class LoginUserController {
@@ -25,7 +28,14 @@ public class LoginUserController {
     private LoginUserService loginUserService;
 
 
-
+    /**
+     * 로그인
+     * @param session
+     * @param request
+     * @param model
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/login")
     public String index(HttpSession session, HttpServletRequest request, Model model) throws Exception{
         String result = "main/login/login";
@@ -34,22 +44,31 @@ public class LoginUserController {
     }
 
 
+    /**
+     * 로그인 정보 가져오기
+     * @param param
+     * @param httpSession
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/getLoginInfo", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> login(@RequestBody Map<String, Object> param, HttpSession httpSession) throws Exception {
-        String userId = String.valueOf(param.getOrDefault("userId",""));
-        String password = String.valueOf(param.getOrDefault("password",""));
         Map<String, Object> loginMap = loginUserService.login(param);
-        //Map<String, Object> loginMap =new HashMap<>();
-        loginMap.put("login", true);
         if (loginMap.get("login").equals(true)) {
-            //User user = (User) loginMap.get("user");
-            httpSession.setAttribute("USER_ID", loginMap.get("userid"));
+            httpSession.setAttribute("USER_ID", loginMap.get("userId"));
             httpSession.setAttribute("USER_NAME", loginMap.get("name"));
+
         }
         return loginMap;
     }
 
+    /**
+     * 로그아웃
+     * @param httpSession
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpSession httpSession, Model model) {
         if (httpSession.getAttribute("USER_ID") != null) {

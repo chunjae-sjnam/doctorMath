@@ -11,23 +11,35 @@
     <div class="login_area">
         <!-- <img src="images/logo.svg" alt="천재교육 ACA 관리자" /> -->
 
-        <h1>사용자 로그인 화면</h1>
+        <h1>닥터매쓰</h1>
+        <span>회원 서비스 이용을 위해 로그인 해주세요</span>
         <form id="lForm" name="lForm">
             <div class="login_box">
                 <input type="text" placeholder="아이디" id="userId" name="user_id"/>
                 <input class="mt12" type="password" placeholder="비밀번호" id="password" name="password" onkeydown="javascript:enterKey();"/>
                 <div class="btn_right mt15 check_box">
-                    <input type="checkbox" id="box1">
-                    <label for="box1">아이디 저장</label>
+                    <input type="checkbox" id="box1" onclick="javascript:saveUserInfo();">
+                    <label for="box1">로그인 상태 유지</label>
                 </div>
+                <div class="btn_zone">
+                    <a class="btn5 btn_color2" href="javascript:findId();">아이디 찾기</a>
+                </div>
+                <div class="btn_zone">
+                    <a class="btn5 btn_color2" href="javascript:findPassword();">비밀번호 찾기</a>
+                </div>
+
+                <div id="msgArea">
+
+                </div>
+
                 <div class="btn_zone">
                     <a class="btn5 btn_color2" href="javascript:fnLogin();">로그인</a>
                 </div>
                 <div class="btn_zone">
-                    <a class="btn5 btn_color2" href="javascript:fnLogin();">무료체험 신청</a>
+                    <a class="btn5 btn_color2" href="javascript:freeTrial();">무료체험 신청</a>
                 </div>
                 <div class="btn_zone">
-                    <a class="btn5 btn_color2" href="javascript:fnLogin();">카카오톡 상담</a>
+                    <a class="btn5 btn_color2" href="javascript:katalkConsulting();">카카오톡 상담</a>
                 </div>
             </div>
         </form>
@@ -50,7 +62,7 @@
     function fnLogin() {
         const userId = document.getElementById("userId").value;
         const password = document.getElementById("password").value;
-        const loginData = {"userId": userId, "password": password};
+        const loginData = {"userId": userId, "password": password, "saveLogin":$('input:checkbox[id="box1"]').is(":checked")};
         $.ajax({
             type: "POST",
             url: '/main/getLoginInfo',
@@ -58,11 +70,11 @@
             data: JSON.stringify(loginData),
             success: function (result) {
                 if(result.login == true){
-                    if($('input:checkbox[id="box1"]').is(":checked") == true){
-                        setCookie("id",userId,7);
-                    }else{
-                        setCookie("id","",-1);
-                    }
+                    // if($('input:checkbox[id="box1"]').is(":checked") == true){
+                    //     setCookie("id",userId,7);
+                    // }else{
+                    //     setCookie("id","",-1);
+                    // }
                     window.location.href = "/main/preClass";
                 }else{
                     alert("아이디/비밀번호를 다시 한번 입력해주세요.");
@@ -74,9 +86,27 @@
         });
     }
 
+    function saveUserInfo(){
+
+        if($('input:checkbox[id="box1"]').is(":checked") == true){
+            document.getElementById("msgArea").innerText="저장 하시겠습니까?";
+        }else{
+            document.getElementById("msgArea").innerText="";
+        }
+    }
+
+    function findId(){
+
+    }
+
+    function findPassword(){
+
+    }
+
+
     document.addEventListener("DOMContentLoaded", function(){
         if(getCookie("id") != ""){
-            document.getElementById("user_id").value = getCookie("id");
+            document.getElementById("userId").value = getCookie("id");
             $('input:checkbox[id="box1"]').attr("checked", true);
         }else{
             $('input:checkbox[id="box1"]').attr("checked", false);
@@ -107,6 +137,14 @@
         if(window.event.keyCode == 13){
             fnLogin();
         }
+    }
+
+    function freeTrial(){
+
+    }
+
+    function katalkConsulting(){
+
     }
 </script>
 </html>

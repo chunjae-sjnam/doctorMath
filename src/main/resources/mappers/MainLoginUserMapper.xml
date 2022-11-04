@@ -4,11 +4,28 @@
 
 
     <select id="login" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
-        SELECT userid, name
-        FROM tmember
-        WHERE userid=#{userId}
-        AND password = #{password}
-
+        select
+            mm.UserID as userId,
+            mm.Name as name,
+            case when mm.MemberType ='T' THEN
+                     mt.HakwonCode
+                 else
+                     mh.HakwonCode
+                end as hakwonCode,
+            case when mm.MemberType ='T' THEN
+                     mt.TeacherCode
+                 else
+                     ' '
+                end as teacherCode
+        from MEM_Member mm
+                 left join MEM_Hakwon mh
+                           on mm.Code =mh.HakwonCode
+                               and mm.MemberType ='H'
+                 left join Mem_Teacher mt
+                           on mm.Code =mt.TeacherCode
+                               and mm.MemberType ='T'
+        where UserID =#{userId}
+          and Pwd =#{password}
     </select>
 
 

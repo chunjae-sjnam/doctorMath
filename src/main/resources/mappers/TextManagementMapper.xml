@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.chunjae.doctormath.main.operation.TextManagementMapper'>
+    
+    <select id="selectHisSent" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select
+            *
+        FROM
+            tb_SMS_his
+        where receiverId = #{receiverId}
+        and receiveType =#{receiveType}
+        order by sentDate, sentTime  desc
+    </select>
+
+    <select id="selectreciverList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select tsh.receiverId,
+               (select name from MEM_Student ms2 where StudentCode=tsh.receiverId) as name,
+               case when tsh.receiveType='C' or tsh.receiveType='P' then 'P'
+                    when tsh.receiveType ='S' then 'S'
+                    else ''
+                   end as receiveType
+        from
+            tb_SMS_his tsh
+                inner join MEM_Student ms
+                           on tsh.receiverId =ms.StudentCode
+                               and tsh.hakwonCode =ms.HakwonCode
+                left join Mem_Teacher mt
+                          on ms.TeacherCode =mt.TeacherCode
+                              and ms.HakwonCode =mt.HakwonCode
+                left join MEM_Member mm
+                          on mm.Code =mt.TeacherCode
+        where tsh.bookmarkFL ='1'
+        and  mm.UserID = #{userId}
+        group by tsh.receiverId
+    </select>
+
+    <select id="templateCnt" parameterType='java.util.LinkedHashMap' resultType="java.lang.Integer">
+        select count(*)
+        from tb_SMS_template tst
+        where hakwonCode = #{hakwonCode}
+          and teacherCode = #{teacherCode}
+          and deleFL ='0'
+    </select>
+
+    <select id="getTemplateListWithMark" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select *
+        from tb_SMS_template tst
+        where hakwonCode = #{hakwonCode}
+          and teacherCode = #{teacherCode}
+          and deleFL ='0'
+          and bookmarkFL ='1'
+        order by modifyDate , createDate desc;
+    </select>
+
+    <insert id="insertToTbSMSTemplate" parameterType='java.util.LinkedHashMap'>
+<!--        <selectKey keyProperty="templateNo" resultType="int" order="BEFORE">-->
+<!--            select  nvl(max(templateNo), 0) from tb_SMS_template where hakwonCode = #{hakwonCode} and teacherCode = #{teacherCode}-->
+<!--        </selectKey>-->
+        insert into tb_SMS_template (
+        templateNo ,
+        hakwonCode ,
+        teacherCode ,
+        title ,
+        content ,
+        bookmarkFL ,
+        createDate ,
+        modifyDate ,
+        deleFL
+        )
+       select
+            (select  nvl(max(templateNo), 0) from tb_SMS_template where hakwonCode = #{hakwonCode} and teacherCode = #{teacherCode}),
+            #{hakwonCode},
+            #{teacherCode},
+            title,
+            content,
+            '0',
+            NOW(),
+            NOW(),
+            '0'
+       from
+        COM_base_sms_template
+
+
+    </insert>
+
+    <select id="getClassList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select
+            mc.seq, mc.ClassName , nvl(mc.curri,''), nvl(mc.Grade,''), 'C', mc.StudentCnt,
+            ms.StudentCode , ms.Name , nvl(ms.Curri,''), nvl(ms.Grade,''), 'S' , 0
+        FROM
+            MEM_Class mc
+                inner join MEM_Class_StudentList mcsl
+                           on mc.Seq =mcsl.ClassSeq
+                inner join MEM_Student ms
+                           on ms.StudentCode  =mcsl.StudentCode
+        where mc.HakwonCode =#{hakwonCode}
+          and (mc.TeacherCode=#{teacherCode} or mc.SubTeacherCode=#{teacherCode} or ms.TeacherCode=#{teacherCode} or ms.SubTeacherCode=#{teacherCode} or ms.SubTeacherCode2=#{teacherCode})
+        order by mc.seq, ms.StudentCode ;
+    </select>
+
+    <select id="getTemplateList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select * from tb_SMS_template tst
+        where tst.hakwonCode = #{hakwonCode}
+          and tst.teacherCode = #{teacherCode}
+          and tst.deleFL ='0'
+        order by tst.templateNo ;
+    </select>
+
+</mapper>
