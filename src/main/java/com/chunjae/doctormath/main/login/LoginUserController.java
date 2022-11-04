@@ -1,6 +1,5 @@
 package com.chunjae.doctormath.main.login;
 
-import com.chunjae.doctormath.homePage.HomeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Controller
 @RequestMapping("main")
@@ -57,6 +56,31 @@ public class LoginUserController {
             httpSession.invalidate();
         }
         return "redirect:/main/login";
+    }
+
+
+    @RequestMapping("/join")
+    public String join(HttpSession session, HttpServletRequest request, Model model) throws Exception{
+        String result = "main/login/join";
+
+        return result;
+    }
+
+    @RequestMapping(value = "/sendSMS", method = RequestMethod.POST)
+    @ResponseBody
+    public String sendSMS(String phoneNumber){
+        Random rand  = new Random();
+        String numStr = "";
+
+        for(int i=0; i<6; i++) {
+            String ran = Integer.toString(rand.nextInt(10));
+            numStr+=ran;
+        }
+
+        System.out.println("수신자 번호 : " + phoneNumber);
+        System.out.println("인증번호 : " + numStr);
+        loginUserService.certifiedPhoneNumber(phoneNumber,numStr);
+        return numStr;
     }
 
 }
