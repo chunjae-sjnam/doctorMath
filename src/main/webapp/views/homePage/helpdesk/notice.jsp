@@ -19,7 +19,6 @@
 </head>
 <script>
     $( document ).ready(function() {
-        console.log( "ready!" );
         //$('#searchType').prop('checked', true)
 /*
         let checkList = $('input[type="checkbox"][name="searchType"]').prop('checked');
@@ -44,7 +43,9 @@
     });
 </script>
 <body>
-<h1> 공지사항 </h1>
+
+<h5>HOME > 고객센터 > 공지사항</h5>
+<h3> 공지사항 </h3>
 <form name="searchForm" action="notice" method="POST">
 <input type="checkbox" name="searchType" id="searchType1" value="title" checked> 제목
 <input type="checkbox" name="searchType" id="searchType2" value="content" > 내용
@@ -53,7 +54,6 @@
 <input type="submit" name="search" value="검색">
 </form>
 <br><br><br>
-
 <style type="text/css">
     .tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
     .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
@@ -71,6 +71,9 @@
     .tg-sort-header:hover:after{visibility:visible}
     .tg-sort-asc:after,.tg-sort-asc:hover:after,.tg-sort-desc:after{visibility:visible;opacity:.4}
     .tg-sort-desc:after{border-bottom:none;border-width:5px 5px 0}</style>
+<div align="left">
+    총 ${listCount} 개
+</div>
 <table id="tg-e2J9M" class="tg">
     <thead>
     <tr>
@@ -83,21 +86,30 @@
     <tbody>
     <c:forEach var="list" items="${data.list}" varStatus="status">
     <tr>
-        <td class="tg-0lax">공지사항</td>
-        <td class="tg-0lax">${list.Seq}</td>
-        <td class="tg-0lax"><a href="noticeDetail?id=${list.Seq}">${list.Title}</a></td>
-        <td class="tg-0lax">${list.CreDate}</td>
+        <td class="tg-0lax">${list.type}</td>
+        <td class="tg-0lax" >${list.id}</td>
+        <td class="tg-0lax"><a href="noticeDetail?id=${list.id}">${list.title}</a></td>
+        <td class="tg-0lax">${list.created_at}</td>
 
     </tr>
     </c:forEach>
+
     </tbody>
 </table>
-<!--
-<c:forEach var="list" items="${data.list}" varStatus="status">
-    <h3>Q. ${list.Title}</h3> <br>
-    <h5>A. ${list.Content}</h5><br>
-    <br><br>
-</c:forEach>
--->
+<br><br>
+<!-- 페이징 -->
+<div class="paging mt20 mb20" align="center">
+    <c:if test="${paging.prev}">
+        <a href="notice${paging.makeQuery(paging.startPage - 1)}"><</a>
+    </c:if>
+
+    <c:forEach begin="${paging.startPage}" end="${paging.endPage}" var="idx">
+        <a href="notice${paging.makeQuery(idx)}">${idx}</a>
+    </c:forEach>
+
+    <c:if test="${paging.next && paging.endPage > 0}">
+        <a href="notice${paging.makeQuery(paging.endPage + 1)}">></a>
+    </c:if>
+</div>
 </body>
 </html>

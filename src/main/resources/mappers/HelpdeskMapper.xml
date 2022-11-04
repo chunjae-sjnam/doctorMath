@@ -1,52 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace='com.chunjae.doctormath.homePage.helpdesk.HelpdeskMapper'>
-
+<!--
+tfaq faq
+tnotice 공지사항
+tnotice_attach 공지사항 첨부파일
+tboard 사용후기 / 업데이트 소식
+tinquiry - 1:1 문의
+-->
     <select id="faqList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
         select *
-        from CMU_FAQ cf
-        where seq in ('3', '4', '5')
-        <!--
-        <if test='"" neq searchTxt and searchTxt != null'>
-            AND (Title LIKE CONCAT('%', #{searchTxt}, '%') or Content LIKE CONCAT('%', #{searchTxt}, '%'))
-        </if>
-        -->
+        from   tfaq
         <choose>
             <when test='searchType eq "title" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE title LIKE CONCAT('%', #{searchTxt}, '%')
             </when>
             <when test='searchType eq "content" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE content LIKE CONCAT('%', #{searchTxt}, '%')
             </when>
             <when test='searchType eq "title_content" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE (title LIKE CONCAT('%', #{searchTxt}, '%') or content LIKE CONCAT('%', #{searchTxt}, '%'))
             </when>
         </choose>
     </select>
 
     <select id="noticeList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
-        select *
-        from CMU_NOTICE cn
+        select id, type, title, date_format(created_at, '%Y-%m-%d') created_at
+        from   tnotice
         <choose>
             <when test='searchType eq "title" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE title LIKE CONCAT('%', #{searchTxt}, '%')
             </when>
             <when test='searchType eq "content" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE content LIKE CONCAT('%', #{searchTxt}, '%')
             </when>
             <when test='searchType eq "title_content" and searchTxt != null'>
-                WHERE Title LIKE CONCAT('%', #{searchTxt}, '%')
+                WHERE (title LIKE CONCAT('%', #{searchTxt}, '%') or content LIKE CONCAT('%', #{searchTxt}, '%'))
             </when>
         </choose>
-        limit 20
+        limit 5 offset #{pageNum}
+    </select>
+
+    <select id="noticeListCount" parameterType='java.util.LinkedHashMap' resultType="int">
+        select count(*)
+        from   tnotice
+        <choose>
+            <when test='searchType eq "title" and searchTxt != null'>
+                WHERE title LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "content" and searchTxt != null'>
+                WHERE content LIKE CONCAT('%', #{searchTxt}, '%')
+            </when>
+            <when test='searchType eq "title_content" and searchTxt != null'>
+                WHERE (title LIKE CONCAT('%', #{searchTxt}, '%') or content LIKE CONCAT('%', #{searchTxt}, '%'))
+            </when>
+        </choose>
     </select>
 
     <select id="noticeDetail" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select title, content, date_format(created_at, '%Y.%m.%d') created_at
+        from   tnotice
+        where  id = #{id}
+    </select>
+
+    <select id="noticeAttach" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
         select *
-        from CMU_FAQ cf
-        where seq = #{id}
+        from   tnotice_attach
+        where  board_id = #{id}
     </select>
 
 
+    <insert id="insertInquiry" parameterType="java.util.LinkedHashMap">
+        insert into tinquiry (type, title, content, name, email, phone)
+        values('service', '서비스이용', '서비스이용 내용', 'drmath1', 'math@chunjae.co.kr', '01012345678')
+    </insert>
+
+    <!--사용후기 , 업데이트소식 -->
+    <select id="boardList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select *
+        from   tboard tr
+        limit 4 offset #{pageNum}
+    </select>
+
+    <select id="boardListCount" parameterType='java.util.LinkedHashMap' resultType="int">
+        select count(*)
+        from   tboard tr
+
+    </select>
+
+    <select id="boardDetail" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select id, title, content, date_format(created_at, '%Y.%m.%d') created_at
+        from tboard
+        where id = #{id}
+    </select>
+
+    <select id="boardDetailList" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+        select id, title, content, date_format(created_at, '%Y.%m.%d') created_at
+        from tboard
+        where id in (3,4,5)
+    </select>
 
 </mapper>

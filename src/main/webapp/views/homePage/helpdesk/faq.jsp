@@ -18,18 +18,19 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.js"></script>
 </head>
 <body>
-<h1> FAQ </h1>
+<h5>HOME > 고객센터 > faq</h5>
+<h3> FAQ </h3>
 <form name="searchForm" action="faq" method="POST">
-<input type="checkbox" name="chk[]" value="title" > 제목
-<input type="checkbox" name="chk[]" value="content" > 내용
-<input type="checkbox" name="chk[]" value="title_content" checked> 제목+내용
-<input type="text" name="searchText" placeholder="검색어를 입력하시오" value="${data.searchTxt}">
-<input type="submit" name="search" value="검색">
+    <input type="checkbox" name="chk[]" value="title" > 제목
+    <input type="checkbox" name="chk[]" value="content" > 내용
+    <input type="checkbox" name="chk[]" value="title_content" checked> 제목+내용
+    <input type="text" name="searchText" placeholder="검색어를 입력하시오" value="${data.searchTxt}">
+    <input type="submit" name="search" value="검색">
 </form>
 <br><br><br>
 <c:forEach var="list" items="${data.list}" varStatus="status">
-    <h3>Q. ${list.Title}</h3> <br>
-    <h5>A. ${list.Content}</h5><br>
+    <h3>Q. ${list.title}</h3> <br>
+    <h5>A. ${list.content}</h5><br>
     <br><br>
 </c:forEach>
 </body>

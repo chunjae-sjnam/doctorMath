@@ -17,26 +17,37 @@
     <title>공지사항 - 상세</title>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.js"></script>
 </head>
+<script>
+    function fileDownload(id){
+        console.log('fileDownload');
+        console.log(id);
+    }
+</script>
 <body>
-<h1> 공지사항 - 상세 </h1>
+<h5>HOME > 고객센터 > 공지사항 - 상세</h5>
+<h3> 공지사항 - 상세 </h3>
 <div>
     <table>
         <tr>
-            <td>[공지사항] ${data.list.Title} |</td>
-            <td>날짜 ${data.list.CreDate} </td>
+            <td>[공지사항] ${data.list.title} |</td>
+            <td>날짜 ${data.list.created_at} </td>
         </tr>
     </table>
     <br><br><br><br>
 
     <table>
         <tr>
-            <td>${data.list.Content} </td>
+            <td>${data.list.content} </td>
         </tr>
     </table>
+    <!--첨부 이미지가 있으면 이미지 보여주고, 이미지가 없으면 공란-->
+    <table>
 
+    </table>
     <table>
         <tr>
-            첨부파일:
+            <!--첨부파일: <a href="javascript:;" onclick="fileDownload('${data2.attachInfo.board_id}');">${data2.attachInfo.attach_file_name}</a><br>-->
+            첨부파일: <a href="${download_path}">${data2.attachInfo.attach_file_name}</a><br>
         </tr>
     </table>
 </div>
