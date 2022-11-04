@@ -5,10 +5,12 @@ spring:
     multipart:
       max-file-size: 1000MB
       max-request-size: 1000MB
+      location: /data/upload
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://doctor-dev.ck39dp9w2h39.ap-northeast-2.rds.amazonaws.com:3306/dev
+    #driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mariadb://doctor-dev.ck39dp9w2h39.ap-northeast-2.rds.amazonaws.com:3306/dev
     #    url: jdbc:mariadb://localhost:3306/innodb
     username: admin
     password: chunjae12#$
@@ -17,6 +19,7 @@ spring:
     view:
       prefix: /views/
       suffix: .jsp
+
 
 
 mybatis:
