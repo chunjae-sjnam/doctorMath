@@ -1,5 +1,6 @@
-package com.chunjae.doctormath.homePage.helpdesk;
+package com.chunjae.doctormath.homepage.auth;
 
+import com.chunjae.doctormath.homepage.helpdesk.HelpdeskMapper;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import net.nurigo.java_sdk.api.Message;
 import org.json.simple.JSONObject;

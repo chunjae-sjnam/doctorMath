@@ -1,4 +1,4 @@
-package com.chunjae.doctormath.main.preClass;
+package com.chunjae.doctormath.main.preclass;
 
 
 import com.chunjae.doctormath.common.MathImageUtil;

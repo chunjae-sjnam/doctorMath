@@ -1,6 +1,5 @@
 package com.chunjae.doctormath.main.login;
 
-import com.chunjae.doctormath.homePage.HomeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

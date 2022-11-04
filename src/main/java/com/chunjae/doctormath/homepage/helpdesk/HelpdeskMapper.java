@@ -1,4 +1,4 @@
-package com.chunjae.doctormath.homePage.helpdesk;
+package com.chunjae.doctormath.homepage.helpdesk;
 
 import org.apache.ibatis.annotations.Mapper;
 

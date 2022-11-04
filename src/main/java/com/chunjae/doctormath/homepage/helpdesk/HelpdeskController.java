@@ -1,4 +1,4 @@
-package com.chunjae.doctormath.homePage.helpdesk;
+package com.chunjae.doctormath.homepage.helpdesk;
 
 import com.chunjae.doctormath.common.StringUtil;
 import com.chunjae.doctormath.common.paging.Criteria;
@@ -114,7 +114,6 @@ public class HelpdeskController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("paging", paging);
         model.addAttribute("listCount", helpdeskService.noticeListCount(param));
-
 
         return "homePage/helpdesk/notice";
     }

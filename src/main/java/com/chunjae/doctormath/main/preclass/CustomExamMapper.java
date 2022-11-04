@@ -1,4 +1,4 @@
-package com.chunjae.doctormath.main.preClass;
+package com.chunjae.doctormath.main.preclass;
 
 import org.apache.ibatis.annotations.Mapper;
 

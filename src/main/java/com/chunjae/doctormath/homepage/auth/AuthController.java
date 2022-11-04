@@ -1,14 +1,7 @@
-package com.chunjae.doctormath.homePage.helpdesk;
+package com.chunjae.doctormath.homepage.auth;
 
-import java.util.HashMap;
 import java.util.Random;
 
-import com.chunjae.doctormath.common.StringUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import org.json.simple.JSONObject;
-import net.nurigo.java_sdk.api.Message;
-import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.chunjae.doctormath.homePage.helpdesk;
+package com.chunjae.doctormath.homepage.helpdesk;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
