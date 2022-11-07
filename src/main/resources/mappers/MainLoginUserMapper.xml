@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
-<mapper namespace='com.chunjae.doctormath.main.login.LoginUserMapper'>
+<mapper namespace='com.chunjae.doctormath.main.login.mapper.LoginUserMapper'>
 
-
-    <select id="login" parameterType='java.util.LinkedHashMap' resultType="java.util.LinkedHashMap">
+    <select id="getLogin" parameterType='com.chunjae.doctormath.main.login.dto.request.LoginReqDto'
+            resultType="com.chunjae.doctormath.main.login.dto.response.LoginResDto">
         select
             mm.UserID as userId,
             mm.Name as name,
@@ -17,6 +17,21 @@
                  else
                      ' '
                 end as teacherCode
+        from MEM_Member mm
+                 left join MEM_Hakwon mh
+                           on mm.Code =mh.HakwonCode
+                               and mm.MemberType ='H'
+                 left join Mem_Teacher mt
+                           on mm.Code =mt.TeacherCode
+                               and mm.MemberType ='T'
+        where UserID =#{userId}
+          and Pwd =#{password}
+    </select>
+
+    <select id="getLoginCount" parameterType='com.chunjae.doctormath.main.login.dto.request.LoginReqDto'
+            resultType="java.lang.Integer">
+        select
+            count(*)
         from MEM_Member mm
                  left join MEM_Hakwon mh
                            on mm.Code =mh.HakwonCode
