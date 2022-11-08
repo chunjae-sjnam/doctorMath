@@ -3,8 +3,8 @@
 <html>
 <head>
     <script type="text/javascript" src="../../../js/jquery-3.6.1.min.js"></script>
-    <script src="../../../js/login/login.js"></script>
     <script src="../../../js/common/common.js"></script>
+    <script src="../../../js/login/login.js"></script>
     <title>사용자 로그인 화면</title>
 </head>
 <body>
@@ -20,7 +20,7 @@
                 <input type="text" placeholder="아이디" id="userId" name="user_id"/>
                 <input class="mt12" type="password" placeholder="비밀번호" id="password" name="password" onkeydown="javascript:enterKey();"/>
                 <div class="btn_right mt15 check_box">
-                    <input type="checkbox" id="box1" onclick="javascript:saveUserInfo();">
+                    <input type="checkbox" id="box1">
                     <label for="box1">로그인 상태 유지</label>
                 </div>
                 <div class="btn_zone">

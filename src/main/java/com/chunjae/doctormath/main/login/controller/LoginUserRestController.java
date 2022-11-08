@@ -40,14 +40,23 @@ public class LoginUserRestController {
         return loginCount;
     }
 
+    /**
+     * 로그인 정보 가져오기
+     */
+    @RequestMapping("/user-add")
+    public String userAdd(LoginReqDto loginReqDto) {
+        log.info("userAdd loginReqDto ==> {}", loginReqDto);
+        loginUserService.userAdd(loginReqDto);
+        return "redirect:/";
+    }
 
-        /**
-         * 로그아웃
-         *
-         * @param httpSession
-         * @param model
-         * @return
-         */
+    /**
+     * 로그아웃
+     *
+     * @param httpSession
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpSession httpSession, Model model) {
         if (httpSession.getAttribute("USER_ID") != null) {

@@ -1,6 +1,5 @@
 package com.chunjae.doctormath.main.login.controller;
 
-import com.chunjae.doctormath.main.login.service.LoginUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,18 @@ public class LoginUserController {
 
     /**
      * 로그인
-     * @return
      */
     @RequestMapping("/login")
-    public String login() {
+    public String loginView() {
         return "main/login/login";
     }
 
+    /**
+     * 임시 회원가입
+     */
+    @RequestMapping("/user-add-view")
+    public String userAddView() {
+        return "main/login/userAdd";
+    }
 
 }

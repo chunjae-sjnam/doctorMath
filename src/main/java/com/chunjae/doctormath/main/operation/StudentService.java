@@ -1,6 +1,5 @@
 package com.chunjae.doctormath.main.operation;
 
-import com.amazonaws.services.kafkaconnect.model.ScaleOutPolicy;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;

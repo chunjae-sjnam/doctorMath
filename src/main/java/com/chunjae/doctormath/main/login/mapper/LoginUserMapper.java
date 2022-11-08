@@ -10,4 +10,6 @@ public interface LoginUserMapper {
     LoginResDto getLogin(LoginReqDto loginReqDto);
 
     int getLoginCount(LoginReqDto loginReqDto);
+
+    int userAdd(LoginReqDto loginReqDto);
 }

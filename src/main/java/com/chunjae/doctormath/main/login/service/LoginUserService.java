@@ -6,9 +6,6 @@ import com.chunjae.doctormath.main.login.mapper.LoginUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 로그인 service
  */
@@ -27,5 +24,9 @@ public class LoginUserService {
 
     public int getLoginCount(LoginReqDto loginReqDto) {
         return loginUserMapper.getLoginCount(loginReqDto);
+    }
+
+    public int userAdd(LoginReqDto loginReqDto) {
+        return loginUserMapper.userAdd(loginReqDto);
     }
 }
