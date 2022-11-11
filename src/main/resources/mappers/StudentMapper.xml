@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
-<mapper namespace='com.chunjae.doctormath.main.operation.StudentMapper'>
+<mapper namespace='com.chunjae.doctormath.main.operation.student.mapper.StudentMapper'>
 
     <select id="getList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
         SELECT
@@ -23,26 +23,24 @@
         WHERE 1=1
         AND A.HakwonCode = #{HakwonCode}
         AND A.Status != 'W'
-        <if test='"" neq TeacherCode and TeacherCode != null'>
+        <if test="TeacherCode != null and TeacherCode != '' ">
         AND A.TeacherCode = #{TeacherCode}
         </if>
-        <if test='"" neq Name and Name != null'>
-        AND A.Name LIKE CONCAT('%',#{Name},'%')
+        <if test="ClassCode != null and ClassCode != '' ">
+            AND A.ClassCode = #{ClassCode}
         </if>
-        <if test='"" neq Curri and Curri != null'>
-        AND A.Curri = #{Curri}
+        <if test="searchType=='name' and keyword != null and keyword != '' ">
+            AND A.Name LIKE CONCAT('%', #{keyword},'%')
         </if>
-        <if test='"" neq Grade and Grade != null'>
-        AND A.Grade = #{Grade}
+        <if test="searchType=='grade' and keyword != null and keyword != '' ">
+            AND A.Curri LIKE CONCAT('%', #{Curri},'%')
+            AND A.Grade LIKE CONCAT('%', #{Grade},'%')
         </if>
-        <if test='"" neq Status and Status != null'>
-        AND A.Status = #{Status}
+        <if test="searchType=='status' and keyword != null and keyword != '' ">
+            AND A.Status LIKE CONCAT('%', #{Status},'%')
         </if>
-        <if test='"" neq SHtell and SHtell != null'>
-        AND A.SHtell = #{SHtell}
-        </if>
-        <if test='"" neq ClassCode and ClassCode != null'>
-        AND A.ClassCode = #{ClassCode}
+        <if test="searchType=='phone' and keyword != null and keyword != '' ">
+            AND A.SHtell LIKE CONCAT('%', #{keyword},'%')
         </if>
     </select>
 
@@ -50,7 +48,6 @@
         SELECT
             A.HakwonCode,
             A.StudentCode,
-            A.Gender,
             A.School,
             A.Grade,
             A.Curri,
@@ -58,49 +55,66 @@
             A.Memo,
             A.Name,
             A.ClassCode,
-            B.HakwonName,
-            B.HakwonLogo,
-            CONVERT(B.Tell, varchar(20)) AS Tell,
             CONVERT(A.SHtell, varchar(20)) AS SHtell,
             CONVERT(A.PHtell, varchar(20)) AS PHtell,
             A.PostNum,
             A.Addr1,
+            C.Sido,
+            C.Gu,
             C.SchoolName,
             A.Status,
             A.StudyGrade,
-            A.StudyGubun,
             A.Email,
             DATE_FORMAT(A.Birth, '%Y-%m-%d') AS Birth,
             DATE_FORMAT(A.CreDate, '%Y-%m-%d') AS CreDate,
-            D.UserID,
-            D.ParentID
+            B.UserID,
+            B.ParentID
         FROM
             MEM_Student AS A
-            INNER JOIN MEM_Hakwon B ON A.HakwonCode = B.HakwonCode
-            LEFT JOIN  COM_School AS C ON (A.School = C.Seq)
-            LEFT JOIN MEM_Member D ON A.StudentCode = D.code
+            LEFT JOIN MEM_Member B ON (A.StudentCode = B.code)
+            LEFT JOIN COM_School C ON (A.School = C.Seq)
         Where 1=1
-        <if test='"" neq StudentCode and StudentCode != null'>
+        <if test="StudentCode != null and StudentCode != '' ">
         AND A.StudentCode = #{StudentCode}
         </if>
+    </select>
+
+    <select id="sidoList" resultType="java.util.LinkedHashMap" >
+        SELECT Sido
+        FROM COM_School
+        GROUP BY Sido
+        ORDER BY Sido ASC
+    </select>
+
+    <select id="guList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+        SELECT Gu
+        FROM COM_School
+        <if test="Sido != null and Sido != '' ">
+        WHERE Sido = #{Sido}
+        </if>
+        GROUP BY Gu
+        ORDER BY Gu ASC
     </select>
     
     <update id="updateList" parameterType="java.util.LinkedHashMap">
         UPDATE
-            MEM_Student
+            MEM_Student A
         SET
-            Name = #{Name},
-            Curri = #{Curri},
-            Grade = #{Grade},
-            Status = #{Status},
-            SHtell = #{SHtell},
-            PHtell = #{PHtell},
-            Email = #{Email},
-            PostNum = #{PostNum},
-            Addr1 = #{Addr1},
-            Birth = #{Birth},
-            CreDate = #{CreDate},
-            Memo = #{Memo}
-        WHERE StudentCode = #{StudentCode}
+            A.Name = #{Name},
+            A.Curri = #{Curri},
+            A.Grade = #{Grade},
+            A.Status = #{Status},
+            A.SHtell = #{SHtell},
+            A.PHtell = #{PHtell},
+            A.Email = #{Email},
+            A.PostNum = #{PostNum},
+            A.Addr1 = #{Addr1},
+            A.Birth = #{Birth},
+            A.CreDate = #{CreDate},
+            A.Memo = #{Memo}
+        WHERE A.StudentCode = #{StudentCode}
+        <if test="SchoolName != null and SchoolName != '' ">
+            A.School = (SELECT B.Seq FROM COM_School B WHERE B.SchoolName = #{SchoolName} AND B.Sido = #{Sido} AND B.Gu = #{Gu})
+        </if>
     </update>
 </mapper>

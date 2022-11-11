@@ -1,5 +1,6 @@
-package com.chunjae.doctormath.main.operation;
+package com.chunjae.doctormath.main.operation.student.controller;
 
+import com.chunjae.doctormath.main.operation.student.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,32 +29,67 @@ public class StudentController {
 
     //학생 리스트
     @RequestMapping("/list")
-    public String list(@RequestParam Map<String,Object> param, Model model) throws Exception{
+    public String list(@RequestParam Map<String,Object> param, HttpServletRequest request, Model model) throws Exception{
 
         Map<String,Object> resultMap = new HashMap<>();
+        String searchType = request.getParameter("searchType");
+        String keyword = request.getParameter("keyword");
+        String Sido = request.getParameter("Sido");
 
-        String HakwonCode = "H0000194";
-        String TeacherCode = "H0000194";
-        String Name = null;
-        String Curri = null;
-        String Grade = null;
-        String Status = null;
-        String SHtell = null;
-        String ClassCode = null;
+        param.put("HakwonCode", "H0000017");
+        param.put("TeacherCode", "H0000017");
+        param.put("ClassCode", "");
+        param.put("searchType", searchType);
+        param.put("keyword", keyword);
+        param.put("Sido", Sido);
 
-        param.put("HakwonCode", HakwonCode);
-        param.put("TeacherCode", TeacherCode);
-        param.put("Name", Name);
-        param.put("Curri", Curri);
-        param.put("Grade", Grade);
-        param.put("Status", Status);
-        param.put("SHtell", SHtell);
-        param.put("ClassCode", ClassCode);
+        if(param.get("searchType") != null && param.get("searchType").equals("grade")){
+            String Curri = keyword.substring(0, 1);           //학교급
+            String Grade = keyword.substring(1);    //학년
 
+            if(Curri.equals("초")){
+                param.put("Curri", "E");
+                param.put("Grade", Grade);
+
+            } else if(Curri.equals("중")){
+                param.put("Curri", "M");
+                param.put("Grade", Grade);
+
+            } else if(Curri.equals("고")){
+                param.put("Curri", "H");
+                param.put("Grade", Grade);
+            }
+        }
+
+        if(param.get("searchType") != null && param.get("searchType").equals("status")){   //상태
+            String Status = keyword;
+
+            if(Status.equals("재원")){
+                param.put("Status", "S");
+
+            } else if(Status.equals("휴원")){
+                param.put("Status", "P");
+
+            } else if(Status.equals("퇴원")){
+                param.put("Status", "O");
+            }
+        }
         resultMap = studentService.getList(param);
 
         model.addAttribute("resultMap", resultMap);
         return "main/operation/student";
+    }
+
+    //구군 리스트
+    @RequestMapping(value = "/guList", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> guList(@RequestParam Map<String, Object> param) throws Exception{
+
+        String Sido = String.valueOf(param.getOrDefault("Sido",""));
+
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap = studentService.guList(param);
+        return resultMap;
     }
 
     //학생 상세 정보
@@ -76,7 +112,6 @@ public class StudentController {
     public Map<String, Object> updateList(@RequestParam Map<String, Object> param, Model model, HttpServletResponse response) throws Exception{
 
         Map<String, Object> resultMap = new HashMap<>();
-        System.out.println("param>>>>>" + param);
 
         int updateStat = studentService.updateList(param);
         if(updateStat == 1){

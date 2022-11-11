@@ -1,6 +1,6 @@
-package com.chunjae.doctormath.main.operation;
+package com.chunjae.doctormath.main.operation.student.service;
 
-import com.amazonaws.services.kafkaconnect.model.ScaleOutPolicy;
+import com.chunjae.doctormath.main.operation.student.mapper.StudentMapper;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -31,11 +31,23 @@ public class StudentService {
     public Map<String, Object> getList(Map<String, Object> param) throws Exception {
 
         Map<String,Object> resultMap = new HashMap<>();
-        List<Map<String,Object>> list = new ArrayList<>();
 
-        list = studentMapper.getList(param);
+        List<Map<String,Object>> list = studentMapper.getList(param);
+        List<Map<String,Object>> sidoList = studentMapper.sidoList();
+        List<Map<String, Object>> guList = studentMapper.guList(param);
+
         resultMap.put("list", list);
+        resultMap.put("sidoList", sidoList);
+        resultMap.put("guList", guList);
+        return resultMap;
+    }
 
+    public Map<String, Object> guList(Map<String, Object> param) throws Exception {
+
+        Map<String,Object> resultMap = new HashMap<>();
+        List<Map<String, Object>> list = studentMapper.guList(param);
+
+        resultMap.put("guList", list);
         return resultMap;
     }
 
@@ -46,7 +58,6 @@ public class StudentService {
 
         detailList = studentMapper.getDetailList(param);
         resultMap.put("detailList", detailList);
-        System.out.println("resultMap>>>>>" + resultMap);
 
         return resultMap;
     }
@@ -181,5 +192,4 @@ public class StudentService {
             throw new Exception(e);
         }
     }
-
 }

@@ -34,7 +34,7 @@
 
     #banner_online {
         height: 700px;
-        width: 480px;
+        width: 465px;
         border: 1px solid black;
         box-shadow: 3px 3px 7px 1px grey;
         background-color: white;
@@ -94,15 +94,17 @@
     <h3>학생 관리</h3>
     <div class="list_btn">
         <div>
-            <select id="filter" name="filter">
-                <option value="">전체</option>
-                <option value="name">이름</option>
-                <option value="grade">학년</option>
-                <option value="status">상태</option>
-                <option value="phone">연락처</option>
-            </select>
-            <input name="search" id="search" placeholder="검색"/>
-            <button type="submit">검색</button>
+            <form action="/operation/list" name="search-form" method="post">
+                <select name="searchType">
+                    <option selected value="">전체</option>
+                    <option value="name">이름</option>
+                    <option value="grade">학년</option>
+                    <option value="status">상태</option>
+                    <option value="phone">연락처</option>
+                </select>
+                <input type="text" name="keyword" value="" placeholder="검색"/>
+                <input type="submit" value="검색"/>
+            </form>
         </div>
         <div>
             <button type="button" onclick="register();">등록</button>
@@ -235,7 +237,7 @@
                         <td>학생 앱 ID</td>
                         <td>
                             <span name="studentID" id="studentID"></span>
-                            <button type="button">비밀번호 초기화</button>
+                            <button type="button" onclick="fnPwd();">비밀번호 초기화</button>
                             <span style="font-size: 11px">*초기 비밀번호 0000</span>
                         </td>
                     </tr>
@@ -262,20 +264,35 @@
                     <tr>
                         <td>학교</td>
                         <td>
+                            <select name="sido" id="sido" onchange="sidoChange()">
+                                <option value="">시/도</option>
+                                <c:forEach var="list" items="${resultMap.sidoList}" varStatus="status">
+                                    <option>${list.Sido}</option>
+                                </c:forEach>
+                            </select>
+                            <select name="gu" id="gu" onclick="fnGuList()">
+                                <option value="" selected>구/군</option>
+                                <c:forEach var="list" items="${resultMap.guList}" varStatus="status">
+                                    <option>${list.Gu}</option>
+                                </c:forEach>
+                            </select>
                             <input type="text" name="schoolName" id="schoolName" placeholder="학교명을 입력하세요." maxlength="20"/>
                         </td>
                     </tr>
                     <tr>
                         <td>학생 이메일</td>
                         <td>
-                            <input type="text" name="email_sub" id="email_sub">
+                            <input type="text" name="email_sub" id="email_sub" style="width: 70px;">
                             <span>@</span>
-                            <select name="email_domain" id="email_domain">
-                                <option value="">직접 입력</option>
+                            <select name="email_domain" id="email_domain" onchange="emailChange()">
+                                <option value="">선택</option>
                                 <option value="naver.com" ${email_domain eq 'naver.com' ? 'selected' : ''}>naver.com</option>
                                 <option value="gmail.com" ${email_domain eq 'gmail.com' ? 'selected' : ''}>gmail.com</option>
                                 <option value="daum.net" ${email_domain eq 'daum.net' ? 'selected' : ''}>daum.net</option>
+                                <option value="nate.com" ${email_domain eq 'nate.com' ? 'selected' : ''}>nate.com</option>
+                                <option value="direct">직접 입력</option>
                             </select>
+                            <input type="text" name="email_direct" id="email_direct" disabled style="width: 90px;"/>
                         </td>
                     </tr>
                     <tr>
@@ -348,7 +365,7 @@
 </div>
 </body>
 <script type="text/javascript">
-    
+
     //전체 체크박스
     function checkAll() {
         $(document).ready(function() {
@@ -419,24 +436,39 @@
                         $("input:radio[name='status']:radio[value='O']").attr("checked", true);
                     }
 
-                    $("#studentID").text(list.UserID);  //학생 ID
-                    $("#parentID").text(list.ParentID);   //학부모 ID
+                    $("#studentID").text(list.UserID);      //학생 ID
+                    $("#parentID").text(list.ParentID);     //학부모 ID
 
-                    $("#SHtell").val(list.SHtell);      //학생 연락처
-                    $("#PHtell").val(list.PHtell);      //학부모 연락처
-                    $("#schoolName").val(list.SchoolName);  //학교
+                    $("#SHtell").val(list.SHtell);          //학생 연락처
+                    $("#PHtell").val(list.PHtell);          //학부모 연락처
+                    $("#tell").val(list.SHtell);            //집전화
 
                     var email = list.Email; //이메일
+                    var email_domain = email.substring(email.indexOf("@")+1);
+
                     $("#email_sub").val(email.substring(0, email.indexOf("@")));
-                    $("#email_domain").val(email.substring(email.indexOf("@")+1));
 
-                    $("#postNum").val(list.PostNum);  //우편번호
-                    $("#address").val(list.Addr1);  //주소
-                    $("#tell").val(list.Tell);      //집전화
+                    if(email_domain == ""){
+                        $("#email_domain").val("");
 
-                    $("#birth").val(list.Birth);        //생년월일
-                    $("#creDate").val(list.CreDate);    //수업시작일
-                    $("#memo").val(list.Memo);  //비고
+                    } else if(email_domain == "naver.com" || email_domain == "gmail.com" || email_domain == "daum.net" || email_domain == "nate.com"){
+                        $("#email_domain").val(email.substring(email.indexOf("@")+1));
+
+                    } else {
+                        $("#email_domain").val("direct");
+                        $("#email_direct").val(email.substring(email.indexOf("@")+1));
+                        emailChange();
+                    }
+
+                    $("#sido").val(list.Sido);
+                    $("#gu").val(list.Gu);
+                    $("#schoolName").val(list.SchoolName);  //학교
+                    $("#postNum").val(list.PostNum);        //우편번호
+                    $("#address").val(list.Addr1);          //주소
+
+                    $("#birth").val(list.Birth);            //생년월일
+                    $("#creDate").val(list.CreDate);        //수업시작일
+                    $("#memo").val(list.Memo);              //비고
                     
                 } else {
                     alert("오류 발생");
@@ -455,6 +487,135 @@
             $("#modal_detail").fadeOut();
         });
     });
+
+    //구/군 리스트
+    function sidoChange() {
+        console.log("2222222222222222222222");
+        const sido = document.getElementById("sido").value;
+
+        if(sido == ""){
+            $('#gu').empty();
+            $('#gu').append($('<option value="" selected>구/군</option>'));
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/operation/guList',
+            cache: false,
+            data: {
+                Sido: sido
+            },
+            success:function (data){
+                $("#gu option").remove();    //option 초기화
+
+                let html = '';
+                html += '<option value="" >구/군</option>';
+
+                $.each(data.guList, function(i, val){
+                    html += '<option ${val.Gu}>' + val.Gu + '</option>';
+                });
+                $("#gu").append(html);
+                $("#gu").val(list.Gu);
+            },
+            error: function (jqXHR, status, error){
+                alert(status);
+            }
+        });
+    }
+
+    //구/군 리스트
+    function fnGuList() {
+        console.log("1111111111111111111");
+        const sido = document.getElementById("sido").value;
+
+        if(sido == ""){
+            $('#gu').empty();
+            $('#gu').append($('<option value="" selected>구/군</option>'));
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '/operation/guList',
+            cache: false,
+            data: {
+                Sido: sido
+            },
+            success:function (data){
+                $("#gu option").remove();    //option 초기화
+
+                let html = '';
+                html += '<option value="" >구/군</option>';
+
+                $.each(data.guList, function(i, val){
+                    html += '<option ${val.Gu}>' + val.Gu + '</option>';
+                });
+                $("#gu").append(html);
+                console.log($("#gu option:selected").val());
+            },
+            error: function (jqXHR, status, error){
+                alert(status);
+            }
+        });
+    }
+
+    //연락처 타입
+    // $(document).ready(function() {
+    //     $("#SHtell").focus(focused); //input에 focus일 때
+    //     $("#SHtell").blur(blured);   //focus out일 때
+    // });
+    //
+    // function focused(){
+    //     var input = $("#SHtell").val();
+    //
+    //     //input안에서 하이픈(-) 제거
+    //     var phone = input.replace( /-/gi, '');
+    //
+    //     //number 타입으로 변경(숫자만 입력)
+    //     $("#SHtell").prop('type', 'number');
+    //     $("#SHtell").val(phone);
+    // }
+    //
+    // function blured(){
+    //     var input = $("#SHtell").val();
+    //
+    //     //숫자에 하이픈(-) 추가
+    //     var phone = chkItemPhone(input);
+    //
+    //     //text 타입으로 변경
+    //     $("#SHtell").prop('type', 'text');
+    //     $("#SHtell").val(phone);
+    // }
+    //
+    // //전화번호 문자(-)
+    // function chkItemPhone(temp) {
+    //     var number = temp.replace(/[^0-9]/g, "");
+    //     var phone = "";
+    //
+    //     if (number.length < 9) {
+    //         return number;
+    //     } else if (number.length < 10) {
+    //         phone += number.substr(0, 2);
+    //         phone += "-";
+    //         phone += number.substr(2, 3);
+    //         phone += "-";
+    //         phone += number.substr(5);
+    //     } else if (number.length < 11) {
+    //         phone += number.substr(0, 3);
+    //         phone += "-";
+    //         phone += number.substr(3, 3);
+    //         phone += "-";
+    //         phone += number.substr(6);
+    //     } else {
+    //         phone += number.substr(0, 3);
+    //         phone += "-";
+    //         phone += number.substr(3, 4);
+    //         phone += "-";
+    //         phone += number.substr(7);
+    //     }
+    //     return phone;
+    // }
 
     //등록 팝업
     $(document).ready(function (){
@@ -514,6 +675,18 @@
         }
     }
 
+    //이메일 변경 시
+    function emailChange() {
+        let option = $("#email_domain option:selected").val();
+
+        if(option == "direct"){ //직접 입력
+            $("#email_direct").prop("disabled", false);
+        } else {
+            $("#email_direct").prop("disabled", true);
+            $("#email_direct").val("");
+        }
+    }
+
     //학교급 변경 시 학년 변경
     function curriChange() {
         $("#grade option").remove();    //option 초기화
@@ -537,7 +710,6 @@
             html += '<option value="5" ${grade.val eq '5' ? 'selected' : ''}>5학년</option>';
             html += '<option value="6" ${grade.val eq '6' ? 'selected' : ''}>6학년</option>';
 
-        } else {
         }
         $("#grade").append(html);
     }
@@ -617,18 +789,21 @@
         let status = $('input:radio[name="status"]:checked').val();
         let SHtell = document.getElementById("SHtell").value;
         let PHtell = document.getElementById("PHtell").value;
+        let Sido = document.getElementById("sido").value;
+        let Gu = document.getElementById("gu").value;
         let SchoolName = document.getElementById("schoolName").value;
         var email;
 
-        if(document.getElementById("email_domain").value == ''){
-            email = document.getElementById("email_sub").value;
+        if(document.getElementById("email_domain").value == "direct"){
+            email = document.getElementById("email_sub").value + "@" + document.getElementById("email_direct").value;
+
         } else {
             email = document.getElementById("email_sub").value + "@" + document.getElementById("email_domain").value;
         }
 
         let address = document.getElementById("address").value;
         let postNum = document.getElementById("postNum").value;
-        let tell = document.getElementById("tell").value;
+        let tell = document.getElementById("SHtell").value;
         let birth = document.getElementById("birth").value;
         let creDate = document.getElementById("creDate").value;
         let memo = document.getElementById("memo").value;
@@ -657,6 +832,26 @@
             return false;
         }
 
+        if($("#schoolName").val() != ""){
+            if($("#sido").val() == ""){
+                alert("시/도를 선택해 주세요.");
+                $("#sido").focus();
+                return false;
+            }
+
+            if($("#gu").val() == ""){
+                alert("구/군을 선택해 주세요.");
+                $("#gu").focus();
+                return false;
+            }
+        }
+
+        if($("#email_domain").val() == ""){
+            alert("이메일을 선택해주세요.");
+            $("#email_domain").focus();
+            return false;
+        }
+
         if(confirm("저장하시겠습니까?")){
 
             let formData = {
@@ -667,6 +862,8 @@
                 "Status": status,
                 "SHtell": SHtell,
                 "PHtell": PHtell,
+                "Sido": Sido,
+                "Gu": Gu,
                 "SchoolName": SchoolName,
                 "Email": email,
                 "PostNum": postNum,
