@@ -41,7 +41,7 @@ jdbc.connection : Logs connection open and close events
     <logger name="jdbc.resultset" level="OFF" /> <!-- SQL 결과 조회된 데이터의 table을 로그로 남긴다. -->
     <logger name="jdbc.resultsettable" level="OFF" />
 
-    <logger name="jdbc.sqlonly" level="trace" additivity="false">>
+    <logger name="jdbc.sqlonly" level="trace" additivity="false">
         <appender-ref ref="CONSOLE" />
     </logger>
 
