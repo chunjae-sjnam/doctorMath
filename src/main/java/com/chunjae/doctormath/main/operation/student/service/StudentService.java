@@ -3,6 +3,8 @@ package com.chunjae.doctormath.main.operation.student.service;
 import com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto;
 import com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto;
 import com.chunjae.doctormath.main.operation.student.mapper.StudentMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -12,23 +14,21 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
+@Slf4j
 @Service
 public class StudentService {
 
-    protected Logger logger = LoggerFactory.getLogger(StudentService.class);
-
-    @Autowired
-    private StudentMapper studentMapper;
+    private final StudentMapper studentMapper;
 
     public Map<String, Object> getDetailList(Map<String, Object> param) throws Exception {
 
@@ -168,14 +168,10 @@ public class StudentService {
                 studentMapper.insert(listMap); //DB insert
             }
         } catch (Exception e){
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             throw new Exception(e);
         }
     }
-
-//    public StudentResDto getList(StudentReqDto studentReqDto) {
-//        return studentMapper.getList(studentReqDto);
-//    }
 
     public List<StudentResDto> getList(StudentReqDto studentReqDto) {
         return studentMapper.getList(studentReqDto);

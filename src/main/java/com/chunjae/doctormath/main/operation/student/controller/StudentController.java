@@ -3,19 +3,23 @@ package com.chunjae.doctormath.main.operation.student.controller;
 import com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto;
 import com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto;
 import com.chunjae.doctormath.main.operation.student.service.StudentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -23,32 +27,22 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("operation")
+@RequiredArgsConstructor
+@Slf4j
 public class StudentController {
 
-    protected Logger logger = LoggerFactory.getLogger(StudentController.class);
-
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
 
     /**
      * 학생 리스트 가져오기
      */
-//    @RequestMapping("/list")
-//    public StudentResDto getList(StudentReqDto studentReqDto, Model model) {
-//        return studentService.getList(studentReqDto);
-//    }
-
     @RequestMapping("/list")
     public String list(String condition, String keyword, Model model, StudentReqDto studentReqDto) {
         System.out.println("condition>>>>>" + condition);
         System.out.println("keyword>>>>>" + keyword);
 
-        if(condition == "name"){
-            studentReqDto.setName(keyword);
-        }
-
         List<StudentResDto> list = studentService.getList(new StudentReqDto());
-        logger.info("list ==>{}", list);
+        log.info("list ==>{}", list);
 
         model.addAttribute("list", list);
         return "main/operation/student";
@@ -232,7 +226,7 @@ public class StudentController {
                 result.put("msg", "등록 실패");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             result.put("msg", "등록 실패");
         }
         return result;
