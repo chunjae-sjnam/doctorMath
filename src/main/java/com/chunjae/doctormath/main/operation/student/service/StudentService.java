@@ -1,5 +1,7 @@
-package com.chunjae.doctormath.main.operation;
+package com.chunjae.doctormath.main.operation.student.service;
 
+import com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto;
+import com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto;
 import com.chunjae.doctormath.main.operation.student.mapper.StudentMapper;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -27,17 +29,6 @@ public class StudentService {
 
     @Autowired
     private StudentMapper studentMapper;
-
-    public Map<String, Object> getList(Map<String, Object> param) throws Exception {
-
-        Map<String,Object> resultMap = new HashMap<>();
-        List<Map<String,Object>> list = new ArrayList<>();
-
-        list = studentMapper.getList(param);
-        resultMap.put("list", list);
-
-        return resultMap;
-    }
 
     public Map<String, Object> getDetailList(Map<String, Object> param) throws Exception {
 
@@ -182,4 +173,11 @@ public class StudentService {
         }
     }
 
+//    public StudentResDto getList(StudentReqDto studentReqDto) {
+//        return studentMapper.getList(studentReqDto);
+//    }
+
+    public List<StudentResDto> getList(StudentReqDto studentReqDto) {
+        return studentMapper.getList(studentReqDto);
+    }
 }

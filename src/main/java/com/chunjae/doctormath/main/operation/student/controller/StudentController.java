@@ -1,5 +1,7 @@
 package com.chunjae.doctormath.main.operation.student.controller;
 
+import com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto;
+import com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto;
 import com.chunjae.doctormath.main.operation.student.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/operation")
+@RequestMapping("operation")
 public class StudentController {
 
     protected Logger logger = LoggerFactory.getLogger(StudentController.class);
@@ -27,58 +30,80 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    //학생 리스트
+    /**
+     * 학생 리스트 가져오기
+     */
+//    @RequestMapping("/list")
+//    public StudentResDto getList(StudentReqDto studentReqDto, Model model) {
+//        return studentService.getList(studentReqDto);
+//    }
+
     @RequestMapping("/list")
-    public String list(@RequestParam Map<String,Object> param, HttpServletRequest request, Model model) throws Exception{
+    public String list(String condition, String keyword, Model model, StudentReqDto studentReqDto) {
+        System.out.println("condition>>>>>" + condition);
+        System.out.println("keyword>>>>>" + keyword);
 
-        Map<String,Object> resultMap = new HashMap<>();
-        String searchType = request.getParameter("searchType");
-        String keyword = request.getParameter("keyword");
-        String Sido = request.getParameter("Sido");
-
-        param.put("HakwonCode", "H0000017");
-        param.put("TeacherCode", "H0000017");
-        param.put("ClassCode", "");
-        param.put("searchType", searchType);
-        param.put("keyword", keyword);
-        param.put("Sido", Sido);
-
-        if(param.get("searchType") != null && param.get("searchType").equals("grade")){
-            String Curri = keyword.substring(0, 1);           //학교급
-            String Grade = keyword.substring(1);    //학년
-
-            if(Curri.equals("초")){
-                param.put("Curri", "E");
-                param.put("Grade", Grade);
-
-            } else if(Curri.equals("중")){
-                param.put("Curri", "M");
-                param.put("Grade", Grade);
-
-            } else if(Curri.equals("고")){
-                param.put("Curri", "H");
-                param.put("Grade", Grade);
-            }
+        if(condition == "name"){
+            studentReqDto.setName(keyword);
         }
 
-        if(param.get("searchType") != null && param.get("searchType").equals("status")){   //상태
-            String Status = keyword;
+        List<StudentResDto> list = studentService.getList(new StudentReqDto());
+        logger.info("list ==>{}", list);
 
-            if(Status.equals("재원")){
-                param.put("Status", "S");
-
-            } else if(Status.equals("휴원")){
-                param.put("Status", "P");
-
-            } else if(Status.equals("퇴원")){
-                param.put("Status", "O");
-            }
-        }
-        resultMap = studentService.getList(param);
-
-        model.addAttribute("resultMap", resultMap);
+        model.addAttribute("list", list);
         return "main/operation/student";
     }
+
+//    public String list(@RequestParam Map<String,Object> param, HttpServletRequest request, Model model) throws Exception{
+//
+//        Map<String,Object> resultMap = new HashMap<>();
+//        String searchType = request.getParameter("searchType");
+//        String keyword = request.getParameter("keyword");
+//        String Sido = request.getParameter("Sido");
+//
+//        param.put("HakwonCode", "H0000017");
+//        param.put("TeacherCode", "H0000017");
+//        param.put("ClassCode", "");
+//        param.put("searchType", searchType);
+//        param.put("keyword", keyword);
+//        param.put("Sido", Sido);
+//
+//        if(param.get("searchType") != null && param.get("searchType").equals("grade")){
+//            String Curri = keyword.substring(0, 1);           //학교급
+//            String Grade = keyword.substring(1);    //학년
+//
+//            if(Curri.equals("초")){
+//                param.put("Curri", "E");
+//                param.put("Grade", Grade);
+//
+//            } else if(Curri.equals("중")){
+//                param.put("Curri", "M");
+//                param.put("Grade", Grade);
+//
+//            } else if(Curri.equals("고")){
+//                param.put("Curri", "H");
+//                param.put("Grade", Grade);
+//            }
+//        }
+//
+//        if(param.get("searchType") != null && param.get("searchType").equals("status")){   //상태
+//            String Status = keyword;
+//
+//            if(Status.equals("재원")){
+//                param.put("Status", "S");
+//
+//            } else if(Status.equals("휴원")){
+//                param.put("Status", "P");
+//
+//            } else if(Status.equals("퇴원")){
+//                param.put("Status", "O");
+//            }
+//        }
+//        resultMap = studentService.getList(param);
+//
+//        model.addAttribute("resultMap", resultMap);
+//        return "main/operation/student";
+//    }
 
     //구군 리스트
     @RequestMapping(value = "/guList", method = RequestMethod.POST)
@@ -88,7 +113,7 @@ public class StudentController {
         String Sido = String.valueOf(param.getOrDefault("Sido",""));
 
         Map<String,Object> resultMap = new HashMap<>();
-        resultMap = studentService.guList(param);
+//        resultMap = studentService.guList(param);
         return resultMap;
     }
 

@@ -2,46 +2,28 @@
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace='com.chunjae.doctormath.main.operation.student.mapper.StudentMapper'>
 
-    <select id="getList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+    <select id="getList" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
+            resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
         SELECT
-            A.HakwonCode,
-            A.StudentCode,
-            A.Name,
-            A.Gender,
-            CASE A.Curri WHEN 'E' THEN '초' WHEN 'M' THEN '중' ELSE '고' END AS Curri,
-            A.Grade,
-            CASE A.Status WHEN 'P' THEN '휴원' WHEN 'O' THEN '퇴원' ELSE '재원' END AS Status,
-            D.UserID,
-            C.SchoolName,
-            CONVERT(A.SHtell, varchar(20)) AS SHtell,
-            CONVERT(A.PHtell, varchar(20)) AS PHtell,
-            A.Curri,
-            A.Status
+            A.HakwonCode AS hakwonCode,
+            A.StudentCode AS studentCode,
+            A.Name AS name,
+            A.Gender AS gender,
+            CASE A.Curri WHEN 'E' THEN '초' WHEN 'M' THEN '중' ELSE '고' END AS curri,
+            A.Grade AS grade,
+            CASE A.Status WHEN 'P' THEN '휴원' WHEN 'O' THEN '퇴원' ELSE '재원' END AS status,
+            D.UserID AS userID,
+            C.SchoolName AS schoolName,
+            CONVERT(A.SHtell, varchar(20)) AS shtell,
+            CONVERT(A.PHtell, varchar(20)) AS phtell,
+            A.Curri AS curri,
+            A.Status AS status
         FROM MEM_Student AS A
         LEFT JOIN COM_School AS C ON (A.School = C.Seq)
         LEFT JOIN MEM_Member D ON A.StudentCode = D.CODE
         WHERE 1=1
-        AND A.HakwonCode = #{HakwonCode}
+        AND A.HakwonCode = 'H0005382'
         AND A.Status != 'W'
-        <if test="TeacherCode != null and TeacherCode != '' ">
-        AND A.TeacherCode = #{TeacherCode}
-        </if>
-        <if test="ClassCode != null and ClassCode != '' ">
-            AND A.ClassCode = #{ClassCode}
-        </if>
-        <if test="searchType=='name' and keyword != null and keyword != '' ">
-            AND A.Name LIKE CONCAT('%', #{keyword},'%')
-        </if>
-        <if test="searchType=='grade' and keyword != null and keyword != '' ">
-            AND A.Curri LIKE CONCAT('%', #{Curri},'%')
-            AND A.Grade LIKE CONCAT('%', #{Grade},'%')
-        </if>
-        <if test="searchType=='status' and keyword != null and keyword != '' ">
-            AND A.Status LIKE CONCAT('%', #{Status},'%')
-        </if>
-        <if test="searchType=='phone' and keyword != null and keyword != '' ">
-            AND A.SHtell LIKE CONCAT('%', #{keyword},'%')
-        </if>
     </select>
 
     <select id="getDetailList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
