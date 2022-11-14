@@ -1,5 +1,6 @@
 package com.chunjae.doctormath.main.operation.attendance.service;
 
+import com.chunjae.doctormath.main.operation.attendance.mapper.AttendanceMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AttendanceService {
 
-    private final AttendanceService attendanceService;
+    private AttendanceMapper attendanceMapper;
 
 }
