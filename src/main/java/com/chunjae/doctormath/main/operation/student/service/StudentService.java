@@ -30,20 +30,44 @@ public class StudentService {
 
     private final StudentMapper studentMapper;
 
-    public Map<String, Object> getDetailList(Map<String, Object> param) throws Exception {
-
-        Map<String,Object> resultMap = new HashMap<>();
-        List<Map<String,Object>> detailList = new ArrayList<>();
-
-        detailList = studentMapper.getDetailList(param);
-        resultMap.put("detailList", detailList);
-        System.out.println("resultMap>>>>>" + resultMap);
-
-        return resultMap;
+    public List<StudentResDto> getList(StudentReqDto studentReqDto) {
+        return studentMapper.getList(studentReqDto);
     }
 
-    public int updateList(Map<String, Object> param) throws Exception{
-        return studentMapper.updateList(param);
+    public StudentResDto getDetail(StudentReqDto studentReqDto) throws Exception {
+        return studentMapper.getDetail(studentReqDto);
+    }
+
+    public List<StudentResDto> getSido() throws Exception {
+        return studentMapper.getSido();
+    }
+
+    public String selectSeq() throws Exception{
+        return studentMapper.selectSeq();
+    }
+
+    public void updateSeq() throws Exception{
+        studentMapper.updateSeq();
+    }
+
+    public void insertSeq() throws Exception{
+        studentMapper.insertSeq();
+    }
+
+    public String selectCode(StudentReqDto studentReqDto) throws Exception{
+        return studentMapper.selectCode(studentReqDto);
+    }
+
+    public void register(StudentReqDto studentReqDto) throws Exception {
+        studentMapper.register(studentReqDto);
+    }
+
+    public String selectID() throws Exception {
+        return studentMapper.selectID();
+    }
+
+    public int update(Map<String, Object> param) throws Exception{
+        return studentMapper.update(param);
     }
 
     public void fileUpload(File destFile) throws Exception{
@@ -171,9 +195,5 @@ public class StudentService {
             log.error(e.getMessage());
             throw new Exception(e);
         }
-    }
-
-    public List<StudentResDto> getList(StudentReqDto studentReqDto) {
-        return studentMapper.getList(studentReqDto);
     }
 }

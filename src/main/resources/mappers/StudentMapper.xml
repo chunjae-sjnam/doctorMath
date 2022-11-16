@@ -22,63 +22,143 @@
         LEFT JOIN COM_School AS C ON (A.School = C.Seq)
         LEFT JOIN MEM_Member D ON A.StudentCode = D.CODE
         WHERE 1=1
-        AND A.HakwonCode = 'H0005382'
+        AND A.HakwonCode = 'H0000017'
         AND A.Status != 'W'
+        <if test="teacherCode != null and teacherCode != '' ">
+        AND A.TeacherCode = #{teacherCode}
+        </if>
+        <if test="classCode != null and classCode != '' ">
+            AND A.ClassCode = #{classCode}
+        </if>
+        <if test="condition == 'name' and name != null and name != '' ">
+            AND A.Name LIKE CONCAT('%', #{name},'%')
+        </if>
+        <if test="condition == 'grade' and curri != null and curri != '' ">
+            AND A.Curri LIKE CONCAT('%', #{curri},'%')
+        </if>
+        <if test="condition == 'grade' and grade != null and grade != '' ">
+            AND A.Grade LIKE CONCAT('%', #{grade},'%')
+        </if>
+        <if test="condition == 'status' and status != null and status != '' ">
+            AND A.Status LIKE CONCAT('%', #{status},'%')
+        </if>
+        <if test="condition == 'phone' and shtell != null and shtell != '' ">
+            AND A.SHtell LIKE CONCAT('%', #{shtell},'%')
+        </if>
     </select>
 
-    <select id="getDetailList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+    <select id="getDetail" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
+            resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
         SELECT
-            A.HakwonCode,
-            A.StudentCode,
-            A.School,
-            A.Grade,
-            A.Curri,
-            A.TeacherCode,
-            A.Memo,
-            A.Name,
-            A.ClassCode,
-            CONVERT(A.SHtell, varchar(20)) AS SHtell,
-            CONVERT(A.PHtell, varchar(20)) AS PHtell,
-            A.PostNum,
-            A.Addr1,
-            C.Sido,
-            C.Gu,
-            C.SchoolName,
-            A.Status,
-            A.StudyGrade,
-            A.Email,
-            DATE_FORMAT(A.Birth, '%Y-%m-%d') AS Birth,
-            DATE_FORMAT(A.CreDate, '%Y-%m-%d') AS CreDate,
-            B.UserID,
-            B.ParentID
+            A.HakwonCode AS hakwonCode,
+            A.StudentCode AS studentCode,
+            A.School AS school,
+            A.Grade AS grade,
+            A.Curri AS curri,
+            A.TeacherCode AS teacherCode,
+            A.Memo AS memo,
+            A.Name AS name,
+            A.ClassCode classCode,
+            CONVERT(A.SHtell, varchar(20)) AS shtell,
+            CONVERT(A.PHtell, varchar(20)) AS phtell,
+            A.PostNum AS postNum,
+            A.Addr1 AS addr1,
+            C.Sido AS sido,
+            C.Gu AS gu,
+            C.SchoolName AS schoolName,
+            A.Status AS status,
+            A.Email AS email,
+            DATE_FORMAT(A.CreDate, '%Y-%m-%d') AS creDate,
+            B.UserID AS userId
         FROM
             MEM_Student AS A
             LEFT JOIN MEM_Member B ON (A.StudentCode = B.code)
             LEFT JOIN COM_School C ON (A.School = C.Seq)
         Where 1=1
-        <if test="StudentCode != null and StudentCode != '' ">
-        AND A.StudentCode = #{StudentCode}
+        <if test="studentCode != null and studentCode != '' ">
+        AND A.StudentCode = #{studentCode}
         </if>
     </select>
 
-    <select id="sidoList" resultType="java.util.LinkedHashMap" >
-        SELECT Sido
+    <select id="getSido" resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
+        SELECT Sido AS sido
         FROM COM_School
         GROUP BY Sido
         ORDER BY Sido ASC
     </select>
 
-    <select id="guList" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
-        SELECT Gu
+    <select id="getGu" parameterType="java.util.LinkedHashMap" resultType="java.util.LinkedHashMap" >
+        SELECT Gu AS gu
         FROM COM_School
-        <if test="Sido != null and Sido != '' ">
-        WHERE Sido = #{Sido}
+        <if test="sido != null and sido != '' ">
+        WHERE Sido = #{sido}
         </if>
         GROUP BY Gu
         ORDER BY Gu ASC
     </select>
-    
-    <update id="updateList" parameterType="java.util.LinkedHashMap">
+
+    <select id="selectSeq" resultType="java.lang.String">
+        SELECT Seq
+        FROM COM_CodeSeq
+        WHERE MemberType = 'A'
+    </select>
+
+    <update id="updateSeq">
+        UPDATE COM_CodeSeq
+        SET Seq = Seq + 1
+        WHERE MemberType = 'A'
+    </update>
+
+    <insert id="insertSeq">
+        INSERT INTO COM_CodeSeq
+        VALUES ('A', 1)
+    </insert>
+
+    <select id="selectID" resultType="java.lang.String">
+        SELECT StudentID
+        FROM COM_StudentID
+    </select>
+
+    <insert id="register" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO MEM_Student
+        (
+          StudentCode
+        , Name
+        , Curri
+        , Grade
+        , Status
+        , SHtell
+        , PHtell
+        , Email
+        , PostNum
+        , Addr1
+        , CreDate
+        , Memo
+        )
+        VALUES
+        (
+          #{studentCode}
+        , #{name}
+        , #{curri}
+        , #{grade}
+        , #{status}
+        , #{shtell}
+        , #{phtell}
+        , #{email}
+        , #{postNum}
+        , #{addr}
+        , now()
+        , #{memo}
+        )
+    </insert>
+
+    <select id="selectCode" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto" resultType="java.lang.String">
+        SELECT Code
+        FROM MEM_Member
+        WHERE code = #{studentCode}
+    </select>
+
+    <update id="update" parameterType="java.util.LinkedHashMap">
         UPDATE
             MEM_Student A
         SET

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,102 +38,136 @@ public class StudentController {
      * 학생 리스트 가져오기
      */
     @RequestMapping("/list")
-    public String list(String condition, String keyword, Model model, StudentReqDto studentReqDto) {
-        System.out.println("condition>>>>>" + condition);
-        System.out.println("keyword>>>>>" + keyword);
+    public String list(StudentReqDto studentReqDto, Model model) throws Exception{
 
-        List<StudentResDto> list = studentService.getList(new StudentReqDto());
-        log.info("list ==>{}", list);
+        String condition = studentReqDto.getCondition();    //검색조건
+        String keyword = studentReqDto.getKeyword();        //검색어
+
+        if(condition != null && condition.equals("name")){  //이름
+            studentReqDto.setName(keyword);
+        }
+
+        if(condition != null && condition.equals("grade")){ //학년
+
+            String curri = keyword.substring(0, 1);           //학교급
+            String grade = keyword.substring(1);    //학년
+
+            if(curri.equals("초")){
+                studentReqDto.setCurri("E");
+
+            } else if(curri.equals("중")){
+                studentReqDto.setCurri("M");
+
+            } else if(curri.equals("고")){
+                studentReqDto.setCurri("H");
+            }
+            studentReqDto.setGrade(grade);
+        }
+
+        if(condition != null && condition.equals("status")){    //상태
+
+            String status = keyword;
+
+            if(status.equals("재원")){
+                studentReqDto.setStatus("S");
+
+            } else if(status.equals("휴원")){
+                studentReqDto.setStatus("P");
+
+            } else if(status.equals("퇴원")){
+                studentReqDto.setStatus("O");
+            }
+        }
+
+        if(condition != null && condition.equals("phone")) {    //연락처
+            studentReqDto.setShtell(keyword);
+        }
+
+        List<StudentResDto> list = studentService.getList(studentReqDto);
+//        log.info("list ==>{}", list);
 
         model.addAttribute("list", list);
         return "main/operation/student";
     }
 
-//    public String list(@RequestParam Map<String,Object> param, HttpServletRequest request, Model model) throws Exception{
-//
-//        Map<String,Object> resultMap = new HashMap<>();
-//        String searchType = request.getParameter("searchType");
-//        String keyword = request.getParameter("keyword");
-//        String Sido = request.getParameter("Sido");
-//
-//        param.put("HakwonCode", "H0000017");
-//        param.put("TeacherCode", "H0000017");
-//        param.put("ClassCode", "");
-//        param.put("searchType", searchType);
-//        param.put("keyword", keyword);
-//        param.put("Sido", Sido);
-//
-//        if(param.get("searchType") != null && param.get("searchType").equals("grade")){
-//            String Curri = keyword.substring(0, 1);           //학교급
-//            String Grade = keyword.substring(1);    //학년
-//
-//            if(Curri.equals("초")){
-//                param.put("Curri", "E");
-//                param.put("Grade", Grade);
-//
-//            } else if(Curri.equals("중")){
-//                param.put("Curri", "M");
-//                param.put("Grade", Grade);
-//
-//            } else if(Curri.equals("고")){
-//                param.put("Curri", "H");
-//                param.put("Grade", Grade);
-//            }
-//        }
-//
-//        if(param.get("searchType") != null && param.get("searchType").equals("status")){   //상태
-//            String Status = keyword;
-//
-//            if(Status.equals("재원")){
-//                param.put("Status", "S");
-//
-//            } else if(Status.equals("휴원")){
-//                param.put("Status", "P");
-//
-//            } else if(Status.equals("퇴원")){
-//                param.put("Status", "O");
-//            }
-//        }
-//        resultMap = studentService.getList(param);
-//
-//        model.addAttribute("resultMap", resultMap);
-//        return "main/operation/student";
-//    }
+    /**
+     * 시도 리스트
+     */
+    @RequestMapping("/sidoList")
+    public ArrayList<String> sidoList(Model model) throws Exception {
 
-    //구군 리스트
-    @RequestMapping(value = "/guList", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> guList(@RequestParam Map<String, Object> param) throws Exception{
+        ArrayList<String> sidoList = new ArrayList<>();
 
-        String Sido = String.valueOf(param.getOrDefault("Sido",""));
+        List<StudentResDto> list = studentService.getSido();
 
-        Map<String,Object> resultMap = new HashMap<>();
-//        resultMap = studentService.guList(param);
-        return resultMap;
+        for (var i=0; i<list.size(); i++){
+            String sido = list.get(i).getSido();
+            sidoList.add(sido);
+        }
+        log.info("sido>>>>>>" + sidoList);
+        return sidoList;
     }
 
-    //학생 상세 정보
-    @RequestMapping(value = "/detailList", method = RequestMethod.POST)
+    /**
+     * 학생 등록
+     */
+    @RequestMapping(value = "/insert", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> detailList(@RequestParam Map<String, Object> param) throws Exception {
+    public void insert(StudentReqDto studentReqDto) throws Exception{
 
-        String StudentCode = String.valueOf(param.getOrDefault("StudentCode",""));
+        String seq = studentService.selectSeq();
 
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap = studentService.getDetailList(param);
-        resultMap.put("result", true);
+        if(seq != null){
+            studentService.updateSeq();
 
-        return resultMap;
+        } else {
+            studentService.insertSeq();
+        }
+
+        seq = studentService.selectSeq();
+        log.info("seq>>>>>>>>" + seq);
+        String str = "0000000" + seq;
+        log.info("str>>>>>>>>" + str);
+
+        String studentCode = "A" + str.substring(str.length()-7);
+        log.info("studentCode>>>>>>>>" + studentCode);
+
+        studentReqDto.setStudentCode(studentCode);
+        log.info("studentReqDto>>>>>>>>" + studentReqDto);
+
+        //학생 등록
+        studentService.register(studentReqDto);
+
+        //학생 아이디 발급 추가
+        String code = studentService.selectCode(studentReqDto);
+        log.info("code>>>>>>>>" + code);
+
+        if(code == null){
+            log.info("!!!!!!!!!!!!!!!!!!!!!!!!");
+            String studentID = studentService.selectID();
+            log.info("studentID>>>>>>>>" + studentID);
+        }
     }
 
-    //학생 상세 정보 수정
-    @RequestMapping(value = "/updateList", method = RequestMethod.POST)
+    /**
+     * 학생 상세 정보
+     */
+    @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateList(@RequestParam Map<String, Object> param, Model model, HttpServletResponse response) throws Exception{
+    public StudentResDto detail(StudentReqDto studentReqDto) throws Exception{
+        return studentService.getDetail(studentReqDto);
+    }
+
+    /**
+     * 학생 상세 정보 수정
+     */
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> update(@RequestParam Map<String, Object> param, Model model, HttpServletResponse response) throws Exception{
 
         Map<String, Object> resultMap = new HashMap<>();
 
-        int updateStat = studentService.updateList(param);
+        int updateStat = studentService.update(param);
         if(updateStat == 1){
             resultMap.put("result", true);
 
@@ -143,9 +178,11 @@ public class StudentController {
         return resultMap;
     }
 
-    //파일 다운로드
+    /**
+     * 파일 다운로드
+     */
     @RequestMapping(value = "/getDownload")
-    public void excelDownload(HttpServletResponse response, HttpServletRequest request, @RequestParam Map<String, String> paramMap) {
+    public void excelDownload(HttpServletResponse response, HttpServletRequest request, @RequestParam Map<String, String> paramMap) throws Exception{
 
         String fileName = paramMap.get("fileName");
         String path = request.getServletContext().getRealPath("/files/" + fileName);
@@ -202,7 +239,9 @@ public class StudentController {
         }
     }
 
-    //파일 업로드
+    /**
+     * 파일 업로드
+     */
     @RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> fileUpload(MultipartHttpServletRequest request) throws Exception {
