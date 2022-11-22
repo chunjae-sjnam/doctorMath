@@ -2,6 +2,32 @@
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace='com.chunjae.doctormath.main.operation.attendance.mapper.AttendanceMapper'>
 
+    <!-- 출결관리 클래스 목록 -->
+    <select id="attendanceClassList" parameterType="com.chunjae.doctormath.main.operation.attendance.dto.request.AttendanceClassReqDto"
+            resultType="com.chunjae.doctormath.main.operation.attendance.dto.response.AttendanceClassResDto">
+        select
+             Seq as classCode
+            ,ClassName as className
+            ,StudentCnt as studentCnt
+        from MEM_Class
+        where 1=1
+          and HakwonCode = #{hakwonCode}
+        order by CreDate desc
+    </select>
 
+    <!-- 출결관리 클래스 학생 목록 -->
+    <select id="attendanceClassStudentList" parameterType="com.chunjae.doctormath.main.operation.attendance.dto.request.AttendanceClassStudentReqDto"
+            resultType="com.chunjae.doctormath.main.operation.attendance.dto.response.AttendanceClassStudentResDto">
+        select
+             ms.StudentCode as studentCode
+            ,ms.Name as name
+            ,tac.pickup_date as pickupDate
+            ,tac.drop_off_date as dropOffDate
+        from MEM_Class_StudentList mcsl
+            inner join MEM_Student ms on mcsl.StudentCode = ms.StudentCode
+            left outer join t_attendance_check tac on mcsl.StudentCode = tac.student_code
+        where 1=1
+            and mcsl.ClassSeq = #{classCode}
+    </select>
 
 </mapper>

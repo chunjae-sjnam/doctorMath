@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.chunjae.doctormath.main.operation.teacher.mapper.TeacherMapper'>
+
+    <!-- 선생님관리 목록 -->
+    <select id="teacherList" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherReqDto"
+        resultType="com.chunjae.doctormath.main.operation.teacher.dto.response.TeacherResDto">
+        select
+            mt.TeacherCode as teacherCode
+             ,mt.Name as name
+             ,mm.UserID as userId
+             ,mm.HTell as tell
+             ,GROUP_CONCAT(mc.ClassName) as className
+             ,sum(mc.StudentCnt) as teacherStudentCount
+        from Mem_Teacher mt
+                 inner join MEM_Member mm on mt.TeacherCode = mm.Code
+                 left outer join MEM_Class mc on mt.HakwonCode = mc.HakwonCode and mt.TeacherCode = mc.TeacherCode
+        where 1=1
+          and mt.Status = 'S' -- 고정
+          and mt.HakwonCode = #{hakwonCode}
+        group by mt.TeacherCode, mm.UserID
+    </select>
+
+    <!-- 선생님 상세정보 -->
+    <select id="teacherDetail" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherDetailReqDto"
+            resultType="com.chunjae.doctormath.main.operation.teacher.dto.response.TeacherDetailResDto">
+        select
+             mm.Name as name
+            ,mm.UserID as userId
+            ,mm.HTell as tell
+        from Mem_Teacher mt
+            inner join MEM_Member mm on mt.TeacherCode = mm.Code
+        where 1=1
+            and mt.TeacherCode = #{teacherCode}
+    </select>
+
+    <!-- 선생님 수정 -->
+    <update id="updateMemMasterTeacher" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherModifyReqDto">
+        update MEM_Member
+            set
+                Name = #{name}
+              ,HTell = #{tell}
+            where 1=1
+              and Code = #{code}
+    </update>
+
+    <!-- 선생님 수정 -->
+    <update id="updateMemTeacher" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherModifyReqDto">
+        update Mem_Teacher
+        set
+            Name = #{name}
+          ,HTEL = #{tell}
+        where 1=1
+          and TeacherCode = #{code}
+    </update>
+
+</mapper>

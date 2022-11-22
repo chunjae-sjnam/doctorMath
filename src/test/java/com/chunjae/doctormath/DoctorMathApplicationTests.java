@@ -11,7 +11,13 @@ class DoctorMathApplicationTests {
     @Test
     @DisplayName("테스트")
     void test() {
-        System.out.println("awefwefeeeeeeee");
+
+        String s = "S";
+        String inputNumber = "50947";
+
+        String result = s + inputNumber;
+        System.out.println("result ==> " + result);
+
     }
 
 

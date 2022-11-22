@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.chunjae.doctormath.main.operation.classManagement.mapper.ClassManagementMapper'>
+
+    <!-- 클래스관리 목록 -->
+    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto">
+        select
+             mc.Seq as seq
+            ,mc.ClassName as className
+            ,mc.StudentCnt as studentCount
+            ,mc.TeacherCode as mainTeacherCode
+            ,a.Name as mainTeacherName
+            ,mc.SubTeacherCode as subTeacherCode
+            ,b.Name as subTeacherName
+        from MEM_Class mc
+                 left outer join Mem_Teacher a on mc.TeacherCode = a.TeacherCode
+                 left outer join Mem_Teacher b on mc.SubTeacherCode = b.TeacherCode
+        where 1=1
+            and mc.HakwonCode = #{hakwonCode}
+    </select>
+
+</mapper>
