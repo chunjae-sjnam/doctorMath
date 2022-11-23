@@ -25,7 +25,7 @@ public class ClassManagementRestController {
     public List<ClassResDto> classManagementList(ClassReqDto classReqDto) {
 
         //temp
-        classReqDto.setHakwonCode("H0000005");
+        classReqDto.setHakwonCode("H1000000");
         return classManagementService.classManagementList(classReqDto);
     }
 
