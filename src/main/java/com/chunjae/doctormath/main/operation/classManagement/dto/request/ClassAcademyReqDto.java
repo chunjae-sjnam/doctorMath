@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassReqDto {
+public class ClassAcademyReqDto {
 
     private String hakwonCode;
 

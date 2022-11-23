@@ -1,6 +1,6 @@
 package com.chunjae.doctormath.main.operation.classManagement.controller;
 
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
 import com.chunjae.doctormath.main.operation.classManagement.service.ClassManagementService;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +21,12 @@ public class ClassManagementController {
 
     // 클래스 관리
     @RequestMapping("list-view")
-    public String classView(ClassReqDto classReqDto, Model model){
+    public String classView(ClassAcademyReqDto classAcademyReqDto, Model model){
 
         //temp
-        classReqDto.setHakwonCode("H0000005");
+        classAcademyReqDto.setHakwonCode("H0000005");
 
-        List<ClassResDto> classResDtos = classManagementService.classManagementList(classReqDto);
+        List<ClassResDto> classResDtos = classManagementService.classManagementList(classAcademyReqDto);
         model.addAttribute("classList", classResDtos);
         return "main/classManagement/classList";
     }

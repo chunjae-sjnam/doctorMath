@@ -1,7 +1,11 @@
 package com.chunjae.doctormath.main.operation.classManagement.service;
 
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto;
 import com.chunjae.doctormath.main.operation.classManagement.mapper.ClassManagementMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
