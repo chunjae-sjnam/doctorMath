@@ -39,4 +39,27 @@
         </if>
     </select>
 
+    <!-- 팝업 - 학생선택 클래스 목록 -->
+    <select id="classSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto">
+        select
+             Seq as seq
+            ,ClassName as className
+        from MEM_Class
+        where 1=1
+            and HakwonCode = #{hakwonCode}
+    </select>
+
+    <!-- 팝업 - 학생선택 클래스선택 - 학생목록 -->
+    <select id="classStudentSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassStudentSearchListResDto">
+        select
+             ms.StudentCode as studentCode
+            ,ms.Name as studentName
+        from MEM_Class_StudentList mcsl
+            inner join MEM_Student ms on mcsl.StudentCode = ms.StudentCode
+        where 1=1
+            and mcsl.ClassSeq = #{seq}
+    </select>
+
 </mapper>

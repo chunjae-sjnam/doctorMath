@@ -1,9 +1,7 @@
 package com.chunjae.doctormath.main.operation.classManagement.mapper;
 
 import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto;
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
-import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,4 +14,10 @@ public interface ClassManagementMapper {
 
     // 선생님 검색
     List<ClassTeacherSearchResDto> classSearchTeacherList(ClassTeacherSearchReqDto classTeacherSearchReqDto);
+
+    // 팝업 - 학생선택 클래스 목록
+    ClassSearchListResDto classSearchPopupList(ClassAcademyReqDto classAcademyReqDto);
+
+    // 팝업 - 학생선택 클래스선택 - 학생목록
+    ClassSearchListResDto classStudentSearchPopupList(ClassSeqReqDto classSeqReqDto);
 }
