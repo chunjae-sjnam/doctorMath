@@ -7,8 +7,8 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassReqDto {
+public class ClassTeacherSearchReqDto {
 
     private String hakwonCode;
-
+    private String teacherName;
 }

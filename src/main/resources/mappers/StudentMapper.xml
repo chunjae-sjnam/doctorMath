@@ -2,8 +2,53 @@
 <!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN' 'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
 <mapper namespace='com.chunjae.doctormath.main.operation.student.mapper.StudentMapper'>
 
-    <select id="getList" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
+    <select id="studentList" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
             resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
+<!--        SELECT-->
+<!--            A.HakwonCode AS hakwonCode,-->
+<!--            A.StudentCode AS studentCode,-->
+<!--            A.Name AS name,-->
+<!--            A.Gender AS gender,-->
+<!--            CASE A.Curri WHEN 'E' THEN '초' WHEN 'M' THEN '중' ELSE '고' END AS curri,-->
+<!--            A.Grade AS grade,-->
+<!--            CASE A.Status WHEN 'P' THEN '휴원' WHEN 'O' THEN '퇴원' ELSE '재원' END AS status,-->
+<!--            B.UserID AS userID,-->
+<!--            D.UserID AS parentID,-->
+<!--            C.SchoolName AS schoolName,-->
+<!--            CONVERT(A.SHtell, varchar(20)) AS shtell,-->
+<!--            CONVERT(A.PHtell, varchar(20)) AS phtell,-->
+<!--            A.Curri AS curri,-->
+<!--            A.Status AS status-->
+<!--        FROM MEM_Student AS A-->
+<!--        LEFT JOIN MEM_Member B ON (A.StudentCode = B.Code AND B.MemberType = 'S')-->
+<!--        LEFT JOIN COM_School AS C ON (A.School = C.Seq)-->
+<!--        LEFT JOIN MEM_Member D ON (A.StudentCode = D.Code AND D.MemberType = 'P')-->
+<!--        WHERE 1=1-->
+<!--        AND A.HakwonCode = #{hakwonCode}-->
+<!--        AND A.Status != 'W'-->
+<!--        <if test="teacherCode != null and teacherCode != '' ">-->
+<!--            AND A.TeacherCode = #{teacherCode}-->
+<!--        </if>-->
+<!--        <if test="classCode != null and classCode != '' ">-->
+<!--            AND A.ClassCode = #{classCode}-->
+<!--        </if>-->
+<!--        <if test="condition == 'name' and name != null and name != '' ">-->
+<!--            AND A.Name LIKE CONCAT('%', #{name},'%')-->
+<!--        </if>-->
+<!--        <if test="condition == 'grade' and curri != null and curri != '' ">-->
+<!--            AND A.Curri LIKE CONCAT('%', #{curri},'%')-->
+<!--        </if>-->
+<!--        <if test="condition == 'grade' and grade != null and grade != '' ">-->
+<!--            AND A.Grade LIKE CONCAT('%', #{grade},'%')-->
+<!--        </if>-->
+<!--        <if test="condition == 'status' and status != null and status != '' ">-->
+<!--            AND A.Status LIKE CONCAT('%', #{status},'%')-->
+<!--        </if>-->
+<!--        <if test="condition == 'phone' and shtell != null and shtell != '' ">-->
+<!--            AND A.SHtell LIKE CONCAT('%', #{shtell},'%')-->
+<!--        </if>-->
+<!--        ORDER BY A.CreDate DESC-->
+
         SELECT
             A.HakwonCode AS hakwonCode,
             A.StudentCode AS studentCode,
@@ -12,20 +57,21 @@
             CASE A.Curri WHEN 'E' THEN '초' WHEN 'M' THEN '중' ELSE '고' END AS curri,
             A.Grade AS grade,
             CASE A.Status WHEN 'P' THEN '휴원' WHEN 'O' THEN '퇴원' ELSE '재원' END AS status,
-            D.UserID AS userID,
+            B.UserID AS userID,
             C.SchoolName AS schoolName,
             CONVERT(A.SHtell, varchar(20)) AS shtell,
             CONVERT(A.PHtell, varchar(20)) AS phtell,
             A.Curri AS curri,
-            A.Status AS status
+            A.Status AS status,
+            (SELECT UserId FROM MEM_Member mm LEFT JOIN t_mem_parents tmp ON mm.Code = tmp.parent_code and mm.MemberType = 'P' WHERE tmp.student_code = A.StudentCode) AS parentID
         FROM MEM_Student AS A
+        LEFT JOIN MEM_Member AS B ON (A.StudentCode = B.Code AND B.MemberType = 'S')
         LEFT JOIN COM_School AS C ON (A.School = C.Seq)
-        LEFT JOIN MEM_Member D ON A.StudentCode = D.CODE
         WHERE 1=1
-        AND A.HakwonCode = 'H0000017'
+        AND A.HakwonCode = #{hakwonCode}
         AND A.Status != 'W'
         <if test="teacherCode != null and teacherCode != '' ">
-        AND A.TeacherCode = #{teacherCode}
+            AND A.TeacherCode = #{teacherCode}
         </if>
         <if test="classCode != null and classCode != '' ">
             AND A.ClassCode = #{classCode}
@@ -45,9 +91,10 @@
         <if test="condition == 'phone' and shtell != null and shtell != '' ">
             AND A.SHtell LIKE CONCAT('%', #{shtell},'%')
         </if>
+        ORDER BY A.CreDate DESC
     </select>
 
-    <select id="getDetail" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
+    <select id="detailStudent" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto"
             resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
         SELECT
             A.HakwonCode AS hakwonCode,
@@ -68,19 +115,24 @@
             C.SchoolName AS schoolName,
             A.Status AS status,
             A.Email AS email,
+            A.Tell AS tell,
+            A.Birth as birth,
+            A.ClassDate as classDate,
             DATE_FORMAT(A.CreDate, '%Y-%m-%d') AS creDate,
-            B.UserID AS userId
+            B.UserID AS userID,
+            D.UserID AS parentID
         FROM
             MEM_Student AS A
-            LEFT JOIN MEM_Member B ON (A.StudentCode = B.code)
+            LEFT JOIN MEM_Member B ON (A.StudentCode = B.Code AND B.MemberType = 'S')
             LEFT JOIN COM_School C ON (A.School = C.Seq)
+            LEFT JOIN MEM_Member D ON (A.StudentCode = D.Code AND D.MemberType = 'P')
         Where 1=1
         <if test="studentCode != null and studentCode != '' ">
         AND A.StudentCode = #{studentCode}
         </if>
     </select>
 
-    <select id="getSido" resultType="com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto" >
+    <select id="sidoList" resultType="java.util.LinkedHashMap" >
         SELECT Sido AS sido
         FROM COM_School
         GROUP BY Sido
@@ -97,86 +149,157 @@
         ORDER BY Gu ASC
     </select>
 
-    <select id="selectSeq" resultType="java.lang.String">
+    <select id="selectSeq" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.SeqReqDto" resultType="java.lang.String">
         SELECT Seq
         FROM COM_CodeSeq
-        WHERE MemberType = 'A'
+        WHERE MemberType = #{key}
     </select>
 
     <update id="updateSeq">
         UPDATE COM_CodeSeq
         SET Seq = Seq + 1
-        WHERE MemberType = 'A'
+        WHERE MemberType = #{key}
     </update>
 
     <insert id="insertSeq">
         INSERT INTO COM_CodeSeq
-        VALUES ('A', 1)
+        VALUES (#{key}, 1)
     </insert>
 
-    <select id="selectID" resultType="java.lang.String">
-        SELECT StudentID
-        FROM COM_StudentID
-    </select>
-
-    <insert id="register" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertMemStudent" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto">
         INSERT INTO MEM_Student
         (
           StudentCode
+        , HakwonCode
+        , TeacherCode
         , Name
         , Curri
         , Grade
+        , ClassCode
         , Status
         , SHtell
         , PHtell
+        , Tell
         , Email
         , PostNum
         , Addr1
-        , CreDate
+        , Birth
+        , ClassDate
         , Memo
+        , CreDate
         )
         VALUES
         (
           #{studentCode}
+        , #{hakwonCode}
+        , #{teacherCode}
         , #{name}
         , #{curri}
         , #{grade}
+        , #{classCode}
         , #{status}
         , #{shtell}
         , #{phtell}
+        , #{tell}
         , #{email}
         , #{postNum}
-        , #{addr}
-        , now()
+        , #{addr1}
+        , #{birth}
+        , #{classDate}
         , #{memo}
+        , now()
         )
     </insert>
 
-    <select id="selectCode" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto" resultType="java.lang.String">
-        SELECT Code
-        FROM MEM_Member
-        WHERE code = #{studentCode}
-    </select>
+    <insert id="insertMemMemberStudent" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto">
+        INSERT INTO MEM_Member
+        (
+          Seq
+        , UserID
+        , Pwd
+        , Name
+        , Code
+        , MemberType
+        , CreDate
+        )
+        VALUES
+        (
+          ( SELECT MAX(A.Seq)+1 FROM MEM_Member A)
+        , #{userID}
+        , '0000'
+        , #{name}
+        , #{studentCode}
+        , 'S'
+        , now()
+        )
+    </insert>
 
-    <update id="update" parameterType="java.util.LinkedHashMap">
-        UPDATE
-            MEM_Student A
+    <insert id="insertMemMemberParent" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto">
+        INSERT INTO MEM_Member
+        (
+          Seq
+        , UserID
+        , Pwd
+        , Name
+        , Code
+        , MemberType
+        , CreDate
+        )
+        VALUES
+        (
+          ( SELECT MAX(A.Seq)+1 FROM MEM_Member A )
+        , #{parentID}
+        , '0000'
+        , #{name}
+        , #{parentCode}
+        , 'P'
+        , now()
+        )
+    </insert>
+
+    <insert id="insertMemParents" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_mem_parents
+        (
+          parent_code
+        , student_code
+        , hakwon_code
+        , mobile_phone_number
+        , push_yn
+        , created_at
+        , updated_at
+        )
+        VALUES
+        (
+          #{parentCode}
+        , #{studentCode}
+        , #{hakwonCode}
+        , #{phtell}
+        , '0'
+        , now()
+        , now()
+        )
+    </insert>
+
+    <update id="updateStudent" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto">
+        UPDATE MEM_Student
         SET
-            A.Name = #{Name},
-            A.Curri = #{Curri},
-            A.Grade = #{Grade},
-            A.Status = #{Status},
-            A.SHtell = #{SHtell},
-            A.PHtell = #{PHtell},
-            A.Email = #{Email},
-            A.PostNum = #{PostNum},
-            A.Addr1 = #{Addr1},
-            A.Birth = #{Birth},
-            A.CreDate = #{CreDate},
-            A.Memo = #{Memo}
-        WHERE A.StudentCode = #{StudentCode}
-        <if test="SchoolName != null and SchoolName != '' ">
-            A.School = (SELECT B.Seq FROM COM_School B WHERE B.SchoolName = #{SchoolName} AND B.Sido = #{Sido} AND B.Gu = #{Gu})
-        </if>
+            Name = #{name},
+            Curri = #{curri},
+            Grade = #{grade},
+            Status = #{status},
+            SHtell = #{shtell},
+            PHtell = #{phtell},
+            Email = #{email},
+            PostNum = #{postNum},
+            Addr1 = #{addr1},
+            Tell = #{tell},
+            Birth = #{birth},
+            ClassDate = #{classDate},
+            Memo = #{memo}
+        WHERE StudentCode = #{studentCode}
     </update>
+
+    <insert id="excelUpload" parameterType="java.util.LinkedHashMap">
+
+    </insert>
 </mapper>

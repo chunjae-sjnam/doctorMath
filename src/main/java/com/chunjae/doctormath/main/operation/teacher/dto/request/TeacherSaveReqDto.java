@@ -1,17 +1,18 @@
 package com.chunjae.doctormath.main.operation.teacher.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
-public class TeacherAddReqDto {
+@NoArgsConstructor
+public class TeacherSaveReqDto {
 
     private String name;
     private String userId;
     private String tell;
-
+    private String auth;
+    private String teacherCode;
+    private String hakwonCode;
 }

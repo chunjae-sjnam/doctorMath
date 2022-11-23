@@ -1,15 +1,13 @@
 package com.chunjae.doctormath.main.operation.teacher.controller;
 
-import com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherAddReqDto;
-import com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherDetailReqDto;
-import com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherModifyReqDto;
-import com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherReqDto;
+import com.chunjae.doctormath.main.operation.teacher.dto.request.*;
 import com.chunjae.doctormath.main.operation.teacher.dto.response.TeacherDetailResDto;
 import com.chunjae.doctormath.main.operation.teacher.dto.response.TeacherResDto;
 import com.chunjae.doctormath.main.operation.teacher.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -41,10 +39,30 @@ public class TeacherRestController {
     }
 
     // 선생님 등록
-    @RequestMapping("insert")
-    public int insertTeacher(TeacherAddReqDto teacherAddReqDto) {
-        log.info("insertTeacher teacherAddReqDto ==> {}", teacherAddReqDto);
-        return 0;
+    @RequestMapping(value = "insert", method = RequestMethod.POST)
+    public int insertTeacher(TeacherSaveReqDto teacherSaveReqDto) throws Exception {
+        log.info("insertTeacher teacherSaveReqDto ==> {}", teacherSaveReqDto);
+
+        String teacherCode = teacherService.selectTeacherSeq();
+        teacherSaveReqDto.setTeacherCode(teacherCode);
+
+        //temp
+        teacherSaveReqDto.setAuth("T");
+        teacherSaveReqDto.setHakwonCode("H0000005");
+
+        int a;
+        int b;
+
+        try {
+            a = teacherService.insertMemMemberTeacher(teacherSaveReqDto);
+            b = teacherService.insertMemTeacher(teacherSaveReqDto);
+
+        } catch (Exception e) {
+            log.error("insertTeacher Error : " + e.getMessage());
+            return -1;
+        }
+
+        return a+b;
     }
 
 }

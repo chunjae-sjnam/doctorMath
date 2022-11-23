@@ -1,5 +1,7 @@
 package com.chunjae.doctormath.main.operation.student.service;
 
+import com.chunjae.doctormath.main.operation.student.dto.request.FileReqDto;
+import com.chunjae.doctormath.main.operation.student.dto.request.SeqReqDto;
 import com.chunjae.doctormath.main.operation.student.dto.request.StudentReqDto;
 import com.chunjae.doctormath.main.operation.student.dto.response.StudentResDto;
 import com.chunjae.doctormath.main.operation.student.mapper.StudentMapper;
@@ -16,12 +18,14 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,47 +34,166 @@ public class StudentService {
 
     private final StudentMapper studentMapper;
 
-    public List<StudentResDto> getList(StudentReqDto studentReqDto) {
-        return studentMapper.getList(studentReqDto);
+    public List<StudentResDto> studentList(StudentReqDto studentReqDto) {
+
+        String condition = studentReqDto.getCondition();    //검색조건
+        String keyword = studentReqDto.getKeyword();        //검색어
+
+        //이름
+        if(condition != null && condition.equals("name")){
+            studentReqDto.setName(keyword);
+        }
+
+        //학년
+        if(condition != null && condition.equals("grade")){
+
+            String curri = keyword.substring(0, 1);           //학교급
+            String grade = keyword.substring(1);    //학년
+
+            if(curri.equals("초")){
+                studentReqDto.setCurri("E");
+
+            } else if(curri.equals("중")){
+                studentReqDto.setCurri("M");
+
+            } else if(curri.equals("고")){
+                studentReqDto.setCurri("H");
+            }
+            studentReqDto.setGrade(grade);
+        }
+
+        //상태
+        if(condition != null && condition.equals("status")){
+
+            String status = keyword;
+
+            if(status.equals("재원")){
+                studentReqDto.setStatus("S");
+
+            } else if(status.equals("휴원")){
+                studentReqDto.setStatus("P");
+
+            } else if(status.equals("퇴원")){
+                studentReqDto.setStatus("O");
+            }
+        }
+
+        //연락처
+        if(condition != null && condition.equals("phone")) {
+            studentReqDto.setShtell(keyword);
+        }
+
+        //temp
+        studentReqDto.setHakwonCode("H0000031");
+        studentReqDto.setTeacherCode("H0000031");
+
+        return studentMapper.studentList(studentReqDto);
     }
 
-    public StudentResDto getDetail(StudentReqDto studentReqDto) throws Exception {
-        return studentMapper.getDetail(studentReqDto);
+    public StudentResDto detailStudent(StudentReqDto studentReqDto) throws Exception {
+        return studentMapper.detailStudent(studentReqDto);
     }
 
-    public List<StudentResDto> getSido() throws Exception {
-        return studentMapper.getSido();
+    public ArrayList<String> sidoList() throws Exception {
+        return studentMapper.sidoList();
     }
 
-    public String selectSeq() throws Exception{
-        return studentMapper.selectSeq();
+    public String userKey(String key) throws Exception {
+        return studentMapper.selectSeq(new SeqReqDto(key));
     }
 
-    public void updateSeq() throws Exception{
-        studentMapper.updateSeq();
+    public String selectStudentSeq() throws Exception{
+
+        String seq = userKey("S");
+
+        if(seq != null){
+            studentMapper.updateSeq(new SeqReqDto("S"));
+
+        } else {
+            studentMapper.insertSeq(new SeqReqDto("S"));
+        }
+
+        seq = userKey("S");
+        String str = "0000000" + seq;
+
+        String studentCode = "S" + str.substring(str.length()-7);
+        log.info("studentCode>>>>>>>>" + studentCode);
+
+        return studentCode;
     }
 
-    public void insertSeq() throws Exception{
-        studentMapper.insertSeq();
+    public String selectParentSeq() throws Exception{
+
+        String seq = userKey("P");
+
+        if(seq != null){
+            studentMapper.updateSeq(new SeqReqDto("P"));
+
+        } else {
+            studentMapper.insertSeq(new SeqReqDto("P"));
+        }
+
+        seq = userKey("P");
+        String str = "0000000" + seq;
+
+        String parentCode = "P" + str.substring(str.length()-7);
+        log.info("parentCode>>>>>>>>" + parentCode);
+
+        return parentCode;
     }
 
-    public String selectCode(StudentReqDto studentReqDto) throws Exception{
-        return studentMapper.selectCode(studentReqDto);
+    public int insertMemStudent(StudentReqDto studentReqDto) throws Exception {
+
+        //temp
+        studentReqDto.setHakwonCode("H0000031");
+        studentReqDto.setTeacherCode("H0000031");
+
+        return studentMapper.insertMemStudent(studentReqDto);
     }
 
-    public void register(StudentReqDto studentReqDto) throws Exception {
-        studentMapper.register(studentReqDto);
+    public int insertMemMember(StudentReqDto studentReqDto) throws Exception {
+
+        String shtell = studentReqDto.getShtell();
+        String userID;
+        String parentID;
+
+        //학생, 학부모 아이디 발급 추가
+        if(shtell == null || shtell.isEmpty()){ //임의 생성
+
+            String numStr = "";
+
+            for(int i=0; i<8; i++) {
+                //0~9 까지 난수 생성
+                String num = Integer.toString(new Random().nextInt(10));
+                numStr += num;
+            }
+            userID = "S" + numStr;
+            parentID = "P" + numStr;
+
+        } else {    //학생 연락처 8자리 생성
+            userID = "S" + shtell.substring(3);
+            parentID = "P" + shtell.substring(3);
+        }
+
+        studentReqDto.setUserID(userID);
+        studentReqDto.setParentID(parentID);
+
+        int studentCnt = studentMapper.insertMemMemberStudent(studentReqDto);   //학생 등록
+        int parentCnt = studentMapper.insertMemMemberParent(studentReqDto);     //학부모 등록
+        int cnt = studentCnt+ parentCnt;
+
+        return cnt;
     }
 
-    public String selectID() throws Exception {
-        return studentMapper.selectID();
+    public int insertMemParents(StudentReqDto studentReqDto) throws Exception{
+        return studentMapper.insertMemParents(studentReqDto);
     }
 
-    public int update(Map<String, Object> param) throws Exception{
-        return studentMapper.update(param);
+    public int updateStudent(StudentReqDto studentReqDto) throws Exception{
+        return studentMapper.updateStudent(studentReqDto);
     }
 
-    public void fileUpload(File destFile) throws Exception{
+    public void excelUpload(File destFile) throws Exception {
 
         ArrayList<ArrayList<String>> listResult = new ArrayList<>();
 
@@ -171,27 +294,36 @@ public class StudentService {
             }
             fis.close();
 
-            for (int i = 0; i < listResult.size(); i++){
+            for (int i = 0; i < listResult.size(); i++) {
                 Map<String, Object> listMap = new HashMap<>();
 
-                listMap.put("ClassName", listResult.get(i).get(0));
-                listMap.put("Name", listResult.get(i).get(1));
-                listMap.put("Curri", listResult.get(i).get(2));
-                listMap.put("Grade", listResult.get(i).get(3));
-                listMap.put("Status", listResult.get(i).get(4));
-                listMap.put("SHtell", listResult.get(i).get(5));
-                listMap.put("PHtell", listResult.get(i).get(6));
-                listMap.put("SchoolName", listResult.get(i).get(7));
-                listMap.put("Email", listResult.get(i).get(8));
-                listMap.put("Addr1", listResult.get(i).get(9));
-                listMap.put("Tell", listResult.get(i).get(10));
-                listMap.put("Birth", listResult.get(i).get(11));
-                listMap.put("CreDate", listResult.get(i).get(12));
+                FileReqDto fileReqDto = new FileReqDto();
 
-                System.out.println("listMap" + listMap);
-                studentMapper.insert(listMap); //DB insert
+                fileReqDto.setName(listResult.get(i).get(0));
+                fileReqDto.setCurri(listResult.get(i).get(1));
+                fileReqDto.setGrade(listResult.get(i).get(2));
+                fileReqDto.setUserID(listResult.get(i).get(3));
+                fileReqDto.setParentID(listResult.get(i).get(4));
+                fileReqDto.setStatus(listResult.get(i).get(5));
+                fileReqDto.setShtell(listResult.get(i).get(6));
+                fileReqDto.setPhtell(listResult.get(i).get(7));
+
+                String schoolName = listResult.get(i).get(8);
+                String[] str = schoolName.split(" ");
+
+                fileReqDto.setSido(str[0]);
+                fileReqDto.setGu(str[1]);
+                fileReqDto.setSchool(str[2]);
+
+                fileReqDto.setEmail(listResult.get(i).get(9));
+                fileReqDto.setAddr1(listResult.get(i).get(10));
+                fileReqDto.setTell(listResult.get(i).get(11));
+                fileReqDto.setBirth(listResult.get(i).get(12));
+                fileReqDto.setClassDate(listResult.get(i).get(13));
+
+                int cnt = studentMapper.excelUpload(fileReqDto);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new Exception(e);
         }

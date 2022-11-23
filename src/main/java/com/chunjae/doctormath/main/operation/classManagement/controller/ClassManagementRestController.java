@@ -1,7 +1,9 @@
 package com.chunjae.doctormath.main.operation.classManagement.controller;
 
 import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto;
 import com.chunjae.doctormath.main.operation.classManagement.service.ClassManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +23,15 @@ public class ClassManagementRestController {
     // 클래스관리 목록
     @RequestMapping("list")
     public List<ClassResDto> classManagementList(ClassReqDto classReqDto) {
+
+        //temp
+        classReqDto.setHakwonCode("H0000005");
         return classManagementService.classManagementList(classReqDto);
     }
 
-
+    // 선생님 검색
+    @RequestMapping("class-search-teacher-list")
+    public List<ClassTeacherSearchResDto> classSearchTeacherList(ClassTeacherSearchReqDto classTeacherSearchReqDto){
+        return classManagementService.classSearchTeacherList(classTeacherSearchReqDto);
+    }
 }

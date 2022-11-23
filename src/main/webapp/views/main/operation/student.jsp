@@ -1,9 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: NAMSEOYUN
-  Date: 2022-11-11
-  Time: 오후 4:18
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -14,7 +8,8 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="../../../js/student/studentSave.js"></script>
-    <title>학생관리</title>
+    <script src="../../../js/student/studentUpdate.js"></script>
+    <title>학생 관리</title>
 </head>
 <style>
     table {
@@ -38,7 +33,7 @@
         background-color: white;
         z-index: 9999;
         margin-left: 36%;
-        margin-top: -50%;
+        margin-top: -30%;
         display: none;
         position: fixed;
     }
@@ -49,7 +44,7 @@
         margin-bottom: 10px;
     }
 
-    #modal_detail {
+    #modal_detail, #modal_file {
         position:fixed;
         width:100%;
         height:100%;
@@ -60,13 +55,29 @@
         display: none;
     }
 
+    #banner_file {
+        height: 200px;
+        width: 450px;
+        border: 1px solid black;
+        box-shadow: 3px 3px 7px 1px grey;
+        background-color: white;
+        z-index: 9999;
+        margin-left: 36%;
+        margin-top: -20%;
+        display: none;
+        position: fixed;
+    }
+
     #close_button {
         float: right;
         margin-top: 2px;
     }
+
+    input[id=excelFile] {
+        width: 370px;
+    }
 </style>
 <body>
-<div id="wrap">
     <h3>학생 관리</h3>
     <div class="list_btn">
         <div>
@@ -124,15 +135,15 @@
                         <input type="checkbox" name="checkbox" onclick="check()"/>
                     </td>
                     <td>${status.count}</td>
-                    <td>${list.name}</td>
+                    <td>${fn:substring(list.name,0,1)}*${fn:substring(list.name,2,fn:length(list.name))}</td>
                     <td>${list.curri}${list.grade}</td>
                     <td>${list.status}</td>
-                    <td>${list.userId}</td>
+                    <td>${list.userID}</td>
                     <td>
                         <c:if test="${!empty list.shtell}">${fn:substring(list.shtell,0,3)}-${fn:substring(list.shtell,3,7)}-${fn:substring(list.shtell,7,11)}</c:if>
                         <c:if test="${empty list.shtell}">미등록</c:if>
                     </td>
-                    <td>${list.userId}</td>
+                    <td>${list.parentID}</td>
                     <td>
                         <c:if test="${!empty list.phtell}">${fn:substring(list.phtell,0,3)}-${fn:substring(list.phtell,3,7)}-${fn:substring(list.phtell,7,11)}</c:if>
                         <c:if test="${empty list.phtell}">미등록</c:if>
@@ -206,22 +217,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>학생 앱 ID</td>
-                        <td>
-                            <span name="studentID" id="studentID"></span>
-                            <button type="button">비밀번호 초기화</button>
-                            <span style="font-size: 11px">*초기 비밀번호 0000</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>학부모 앱 ID</td>
-                        <td>
-                            <span name="parentID" id="parentID"></span>
-                            <button type="button">비밀번호 초기화</button>
-                            <span style="font-size: 11px">*초기 비밀번호 0000</span>
-                        </td>
-                    </tr>
-                    <tr>
                         <td>학생 연락처</td>
                         <td>
                             <input type="text" name="shtell" id="shtell" placeholder="숫자만 입력하세요."/>
@@ -231,6 +226,22 @@
                         <td>학부모 연락처</td>
                         <td>
                             <input type="text" name="phtell" id="phtell" placeholder="숫자만 입력하세요."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>학생 앱 ID</td>
+                        <td>
+                            <span name="studentID" id="studentID"></span>
+                            <button type="button" onclick="defaultPassword(document.getElementById('studentCode').value);">비밀번호 초기화</button>
+                            <span style="font-size: 11px">*초기 비밀번호 0000</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>학부모 앱 ID</td>
+                        <td>
+                            <span name="parentID" id="parentID"></span>
+                            <button type="button">비밀번호 초기화</button>
+                            <span style="font-size: 11px">*초기 비밀번호 0000</span>
                         </td>
                     </tr>
                     <tr>
@@ -267,7 +278,7 @@
                         <td>집 주소</td>
                         <td>
                             <input type="number" name="postNum" id="postNum" maxlength="6" style="width: 60px"><br>
-                            <input type="text" name="addr" id="addr" placeholder="주소를 입력하세요."/>
+                            <input type="text" name="addr1" id="addr1" placeholder="주소를 입력하세요."/>
                         </td>
                     </tr>
                     <tr>
@@ -285,7 +296,7 @@
                     <tr>
                         <td>수업 시작일</td>
                         <td>
-                            <input type="text" name="classStart" id="classStart" autocomplete="off" placeholder="YYYY-MM-DD"/>
+                            <input type="text" name="classDate" id="classDate" autocomplete="off" placeholder="YYYY-MM-DD"/>
                         </td>
                     </tr>
                     <tr>
@@ -298,9 +309,37 @@
             </div><hr>
             <div class="pop_bottom" align="center">
                 <button type="button" onclick="goBack();">취소</button>
-                <button type="button" onclick="detailSave();">저장</button>
+                <input type="button" onclick="detailSave(document.getElementById('studentCode').value);" value="저장">
             </div>
         </form>
+    </div>
+    <div id="modal_file">
+    </div>
+    <div id="banner_file">
+        <div id="close_button_register" style ="cursor: pointer;">
+            <img src="/images/close_button.png" width="12px" height="12px">
+        </div>
+        <div class="file_area">
+            <p>일괄</p>
+            <form id="form" name="form" method="post" enctype="multipart/form-data">
+                <div style="margin-left: 15px;">
+                    <div>
+                        <input type="file" id="inputFile" style="display: none;" accept=".xlsx, .xls"
+                               onchange="document.getElementById('excelFile').value=this.value.replace(/C:\\fakepath\\/i,'');">
+                        <input type="text" id="excelFile" placeholder="파일 끌어놓기 또는 첨부로 학생 명단을 추가하세요." readonly/>
+                        <a href="#" onclick="document.getElementById('inputFile').click();">첨부</a>
+                    </div>
+                    <span style="font-size: 10px">*최대 00Mb까지 등록이 가능합니다.</span>
+                </div>
+            </form>
+        </div>
+        <div align="center" style="margin: 15px 0px">
+            <a href="/operation/getDownload?fileName=닥터매쓰 학생 등록 양식.xls">파일 다운로드</a>
+        </div>
+        <div class="pop_bottom" align="center">
+            <button type="button" onclick="goBack();">취소</button>
+            <button type="button" onclick="fileUpload(this);">등록</button>
+        </div>
     </div>
     <div id="modal_register">
     </div>
@@ -345,6 +384,18 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>학생 연락처</td>
+                            <td>
+                                <input type="text" name="shtell_i" id="shtell_i" placeholder="숫자만 입력하세요."/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>학부모 연락처</td>
+                            <td>
+                                <input type="text" name="phtell_i" id="phtell_i" placeholder="숫자만 입력하세요."/>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>학생 앱 ID</td>
                             <td>
                                 <span name="studentID_i" id="studentID_i"></span>
@@ -359,30 +410,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>학생 연락처</td>
-                            <td>
-                                <input type="text" name="shtell_i" id="shtell_i" placeholder="숫자만 입력하세요."/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>학부모 연락처</td>
-                            <td>
-                                <input type="text" name="phtell_i" id="phtell_i" placeholder="숫자만 입력하세요."/>
-                            </td>
-                        </tr>
-                        <tr>
                             <td>학교</td>
                             <td>
-                                <select name="sido_i" id="sido_i" onclick="sidoList_i();">
-                                    <option value="" selected>시/도</option>
-                                </select>
+                                <form action="/operation/sidoList" method="post" name="sidoList">
+                                    <select name="sido_i" id="sido_i" onclick="sidoList_i()" onchange="guList_i()">
+                                        <option value="">시/도</option>
+                                    </select>
+                                </form>
                                 <select name="gu_i" id="gu_i">
                                     <option value="" selected>구/군</option>
                                 </select>
                                 <select name="school_i" id="school_i">
                                     <option value="" selected>학교 선택</option>
                                 </select>
-                                <button type="button">신규등록</button>
                             </td>
                         </tr>
                         <tr>
@@ -405,7 +445,7 @@
                             <td>집 주소</td>
                             <td>
                                 <input type="number" name="postNum_i" id="postNum_i" maxlength="6" style="width: 60px"><br>
-                                <input type="text" name="addr_i" id="addr_i" placeholder="주소를 입력하세요."/>
+                                <input type="text" name="addr1_i" id="addr1_i" placeholder="주소를 입력하세요."/>
                             </td>
                         </tr>
                         <tr>
@@ -423,7 +463,7 @@
                         <tr>
                             <td>수업 시작일</td>
                             <td>
-                                <input type="text" name="classStart_i" id="classStart_i" autocomplete="off" placeholder="YYYY-MM-DD"/>
+                                <input type="text" name="classDate_i" id="classDate_i" autocomplete="off" placeholder="YYYY-MM-DD"/>
                             </td>
                         </tr>
                         <tr>
@@ -441,9 +481,17 @@
             <button type="button" onclick="registerSave();">저장</button>
         </div>
     </div>
-</div>
 </body>
 <script type="text/javascript">
+    
+    function sidoList_i() {
+        $("form[name=sidoList]").submit();
+    }
+
+    //비밀번호 초기화
+    function defaultPassword(studentCode) {
+
+    }
 
     //전체 체크박스
     function checkAll() {
@@ -470,7 +518,6 @@
             $("#checkAll").prop("checked", true);
         }
     }
-
 
     //상세정보 보기
     function detailPopUp(studentCode){
@@ -500,8 +547,25 @@
                     $("input:radio[name='status']:radio[value='O']").attr("checked", true);
                 }
 
-                $("#studentID").text(data.userId);      //학생 ID
-                $("#parentID").text(data.userId);       //학부모 ID
+                var email = data.email; //이메일
+                var email_domain = email.substring(email.indexOf("@")+1);
+
+                $("#email_sub").val(email.substring(0, email.indexOf("@")));
+
+                if(email_domain == ""){
+                    $("#email_domain").val("");
+
+                } else if(email_domain == "naver.com" || email_domain == "gmail.com" || email_domain == "daum.net" || email_domain == "nate.com"){
+                    $("#email_domain").val(email.substring(email.indexOf("@")+1));
+
+                } else {
+                    $("#email_domain").val("direct");
+                    $("#email_direct").val(email.substring(email.indexOf("@")+1));
+                    emailChange();
+                }
+
+                $("#studentID").text(data.userID);      //학생 ID
+                $("#parentID").text(data.parentID);     //학부모 ID
 
                 $("#shtell").val(data.shtell);          //학생 연락처
                 $("#phtell").val(data.phtell);          //학부모 연락처
@@ -510,131 +574,88 @@
                 $("#gu").val(data.gu);
                 $("#school").val(data.school);          //학교
                 $("#postNum").val(data.postNum);        //우편번호
-                $("#addr").val(data.addr);             //주소
+                $("#addr1").val(data.addr1);            //주소
 
-                $("#tell").val(data.shtell);            //집전화
-                $("#classStart").val(data.classStart);  //수업 시작일
+                $("#tell").val(data.tell);              //집전화
+                $("#birth").val(data.birth);            //생년월일
+                $("#classDate").val(data.classDate);    //수업 시작일
                 $("#memo").val(data.memo);              //비고
             },
-            error: function (jqXHR, status, error){
-                alert('에러: ' + error);
+            error : function(request, status, error){
+                alert("Error :" + error);
             }
         });
     }
 
-    //학교급 변경 시 학년 변경
-    function curriChange() {
-        $("#grade option").remove();    //option 초기화
+    //등록 팝업
+    $(document).ready(function (){
+        $("#close_button_register").click(function(){
+            $("#banner_file").fadeOut();
+            $("#modal_file").fadeOut();
+        });
+    });
 
-        let html = '';
-
-        html += '<option value="">학년</option>';
-        let curri = $("#curri option:selected").val();
-
-        //학교급이 중등, 고등 일 경우 학년 : 1,2,3
-        if(curri == 'M' || curri == 'H'){
-            html += '<option value="1" ${grade.val eq '1' ? 'selected' : ''}>1학년</option>';
-            html += '<option value="2" ${grade.val eq '2' ? 'selected' : ''}>2학년</option>';
-            html += '<option value="3" ${grade.val eq '3' ? 'selected' : ''}>3학년</option>';
-
-        } else if (curri == "E"){ //학교급이 초등 일 경우 1~6
-            html += '<option value="1" ${grade.val eq '1' ? 'selected' : ''}>1학년</option>';
-            html += '<option value="2" ${grade.val eq '2' ? 'selected' : ''}>2학년</option>';
-            html += '<option value="3" ${grade.val eq '3' ? 'selected' : ''}>3학년</option>';
-            html += '<option value="4" ${grade.val eq '4' ? 'selected' : ''}>4학년</option>';
-            html += '<option value="5" ${grade.val eq '5' ? 'selected' : ''}>5학년</option>';
-            html += '<option value="6" ${grade.val eq '6' ? 'selected' : ''}>6학년</option>';
-
-        }
-        $("#grade").append(html);
+    //학생 등록
+    function register() {
+        $("#banner_file").fadeIn();
+        $("#modal_file").fadeIn();
+        $("#inputFile").val('');
+        $("#excelFile").val('');
     }
 
-    //이메일 변경 시
-    function emailChange() {
-        let option = $("#email_domain option:selected").val();
+    //파일 업로드
+    function fileUpload() {
 
-        if(option == "direct"){ //직접 입력
-            $("#email_direct").prop("disabled", false);
+        const inputFile = document.getElementById("inputFile");
+        var formData = new FormData(document.getElementById('form'));
+        formData.append("excel_file", inputFile.files[0]);
+
+        var file = document.getElementById("excelFile").value;
+
+        if(file == "" || file == null){
+            alert("파일을 선택해주세요.");
+            return false;
+
+        } else if(!checkFileType(file)){
+            alert("excel 파일만 업로드 가능합니다.");
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            url: "/operation/fileUpload",
+            data: formData,
+            success: function (result) {
+
+                if(result.code == "SUCCESS"){
+                    alert(result.msg);  //등록 성공
+
+                } else {
+                    alert(result.msg);  //등록 실패
+                }
+            },
+            error: function (result, e) {
+                alert("등록 실패");
+            }
+        });
+    }
+
+    function checkFileType(filePath) {
+        var fileFormat = filePath.split(".");
+
+        if (fileFormat.indexOf("xls") > -1 || fileFormat.indexOf("xlsx") > -1) {
+            return true;
         } else {
-            $("#email_direct").prop("disabled", true);
-            $("#email_direct").val("");
+            return false;
         }
     }
-
-    //상세 정보 보기 팝업
-    $(document).ready(function () {
-        $("#close_button").click(function () {
-            $("#banner_online").fadeOut();
-            $("#modal_detail").fadeOut();
-        });
-    });
-
-    $(document).ready(function () {
-        $(function () {
-            //생년월일
-            $('#birth').datepicker({
-                lang:'ko',
-                dateFormat: 'yy-mm-dd',
-                monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 텍스트
-                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 Tooltip
-                dayNamesMin: ['일','월','화','수','목','금','토'], //달력의 요일 텍스트
-                dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'], //달력의 요일 Tooltip
-                yearSuffix: '년',
-                showMonthAfterYear: true,
-                buttonImageOnly: true
-            });
-
-            $('#birth').keydown(function (event) {
-                var key = event.charCode || event.keyCode || 0;
-                $text = $(this);
-                if (key !== 8 && key !== 9) {
-                    if ($text.val().length === 4) {
-                        $text.val($text.val() + '-');
-                    }
-                    if ($text.val().length === 7) {
-                        $text.val($text.val() + '-');
-                    }
-                }
-                return (key == 8 || key == 9 || key == 46 || (key >= 48 && key <= 57) || (key >= 96 && key <= 105));
-            });
-
-            //수업 시작일
-            $('#classStart').datepicker({
-                lang:'ko',
-                dateFormat: 'yy-mm-dd',
-                monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 텍스트
-                monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 Tooltip
-                dayNamesMin: ['일','월','화','수','목','금','토'], //달력의 요일 텍스트
-                dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'], //달력의 요일 Tooltip
-                yearSuffix: '년',
-                showMonthAfterYear: true,
-                buttonImageOnly: true
-            });
-
-            $('#classStart').keydown(function (event) {
-                var key = event.charCode || event.keyCode || 0;
-                $text = $(this);
-                if (key !== 8 && key !== 9) {
-                    if ($text.val().length === 4) {
-                        $text.val($text.val() + '-');
-                    }
-                    if ($text.val().length === 7) {
-                        $text.val($text.val() + '-');
-                    }
-                }
-                return (key == 8 || key == 9 || key == 46 || (key >= 48 && key <= 57) || (key >= 96 && key <= 105));
-            });
-        });
-    });
 
     //취소
     function goBack() {
         location.href = "/operation/list";
-    }
-
-    //저장
-    function detailSave() {
-
     }
 </script>
 </html>

@@ -72,14 +72,60 @@ const updateTeacher = (teacherCode) => {
 const insertTeacher = () => {
     console.log("등록간다")
 
-    const reqData = {
-         name : document.getElementById('name_i').value
-        ,userId : document.getElementById('userId_i').value
-        ,tell : document.getElementById('tell_i').value
-    }
-    console.log(reqData)
+    let name = document.getElementById("name_i").value;
+    let reg = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
 
-    ajaxCall('post','/api/teacher/insert', reqData, function (resData) {
-        console.log(resData);
-    });
+    let userId = document.getElementById("userId_i").value;
+    let tell = document.getElementById("tell_i").value;
+
+    if(name == "") {
+        alert("이름을 입력해주세요.");
+        $("#name_i").focus();
+        return false;
+    }
+
+    if( reg.test(name) ) {
+        alert("특수기호는 입력 불가합니다.");
+        $("#name_i").focus();
+        return false;
+    }
+
+    if(userId == "") {
+        alert("아이디를 입력해주세요.");
+        $("#userId_i").focus();
+        return false;
+    }
+
+    if(confirm("저장하시겠습니까?")){
+
+        const reqData = {
+            name : name
+            ,userId : userId
+            ,tell : tell
+        }
+        console.log(reqData)
+
+        $.ajax({
+            type: "POST",
+            url: '/api/teacher/insert',
+            cache: false,
+            data: reqData,
+            dataType:'json',
+            success:function (reqData){
+
+                if(reqData == 2){
+                    alert("저장되었습니다.");
+                    location.href = "/teacher/list-view";
+
+                } else {
+                    alert("저장에 실패하였습니다.");
+                    location.href = "/teacher/list-view";
+                }
+            }
+        });
+    }
+
+    // ajaxCall('post','/api/teacher/insert', reqData, function (resData) {
+    //     console.log(resData);
+    // });
 }

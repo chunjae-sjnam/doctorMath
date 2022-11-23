@@ -6,18 +6,37 @@
     <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto">
         select
-             mc.Seq as seq
-            ,mc.ClassName as className
-            ,mc.StudentCnt as studentCount
-            ,mc.TeacherCode as mainTeacherCode
-            ,a.Name as mainTeacherName
-            ,mc.SubTeacherCode as subTeacherCode
-            ,b.Name as subTeacherName
+            mc.Seq
+             ,mc.ClassName as className
+             ,mc.StudentCnt as studentCount
+             ,mc.TeacherCode as mainTeacherCode
+             ,a.Name as mainTeacherName
+             ,mc.SubTeacherCode as subTeacherCode
+             ,b.Name as subTeacherName
+             ,mc.Curri as curri
+             ,mc.Grade as grade
+             ,cbc.CodeName as gradeName
         from MEM_Class mc
-                 left outer join Mem_Teacher a on mc.TeacherCode = a.TeacherCode
-                 left outer join Mem_Teacher b on mc.SubTeacherCode = b.TeacherCode
+             left outer join Mem_Teacher a on mc.TeacherCode = a.TeacherCode and a.Status = 'S'
+             left outer join Mem_Teacher b on mc.SubTeacherCode = b.TeacherCode and b.Status = 'S'
+             left outer join COM_BaseCode cbc on CONCAT(mc.Curri,mc.Grade) = cbc.Code1 and cbc.GubunSeq = 4
         where 1=1
-            and mc.HakwonCode = #{hakwonCode}
+          and mc.HakwonCode = #{hakwonCode}
+    </select>
+
+    <!-- 선생님 검색 -->
+    <select id="classSearchTeacherList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto">
+        select
+            TeacherCode AS teacherCode
+            ,Name AS teacherName
+        from Mem_Teacher mc
+        where 1=1
+          and mc.HakwonCode = #{hakwonCode}
+          and mc.Status = 'S'
+        <if test="teacherName != null and teacherName != '' ">
+            and mc.Name like CONCAT('%', #{teacherName}, '%')
+        </if>
     </select>
 
 </mapper>

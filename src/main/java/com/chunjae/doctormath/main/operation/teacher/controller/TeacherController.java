@@ -22,8 +22,7 @@ public class TeacherController {
     // 선생님 관리
     @RequestMapping("list-view")
     public String teacherView(Model model) {
-        List<TeacherResDto> teacherResDto = teacherService.teacherList(new TeacherReqDto("H00000001"));
-        log.info("teacherResDto ==> {}", teacherResDto);
+        List<TeacherResDto> teacherResDto = teacherService.teacherList(new TeacherReqDto("H0000005"));
         model.addAttribute("teacherList", teacherResDto);
         return "main/teacher/teacherList";
     }

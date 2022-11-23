@@ -38,53 +38,9 @@ public class StudentController {
      * 학생 리스트 가져오기
      */
     @RequestMapping("/list")
-    public String list(StudentReqDto studentReqDto, Model model) throws Exception{
+    public String studentList(StudentReqDto studentReqDto, Model model) throws Exception{
 
-        String condition = studentReqDto.getCondition();    //검색조건
-        String keyword = studentReqDto.getKeyword();        //검색어
-
-        if(condition != null && condition.equals("name")){  //이름
-            studentReqDto.setName(keyword);
-        }
-
-        if(condition != null && condition.equals("grade")){ //학년
-
-            String curri = keyword.substring(0, 1);           //학교급
-            String grade = keyword.substring(1);    //학년
-
-            if(curri.equals("초")){
-                studentReqDto.setCurri("E");
-
-            } else if(curri.equals("중")){
-                studentReqDto.setCurri("M");
-
-            } else if(curri.equals("고")){
-                studentReqDto.setCurri("H");
-            }
-            studentReqDto.setGrade(grade);
-        }
-
-        if(condition != null && condition.equals("status")){    //상태
-
-            String status = keyword;
-
-            if(status.equals("재원")){
-                studentReqDto.setStatus("S");
-
-            } else if(status.equals("휴원")){
-                studentReqDto.setStatus("P");
-
-            } else if(status.equals("퇴원")){
-                studentReqDto.setStatus("O");
-            }
-        }
-
-        if(condition != null && condition.equals("phone")) {    //연락처
-            studentReqDto.setShtell(keyword);
-        }
-
-        List<StudentResDto> list = studentService.getList(studentReqDto);
-//        log.info("list ==>{}", list);
+        List<StudentResDto> list = studentService.studentList(studentReqDto);
 
         model.addAttribute("list", list);
         return "main/operation/student";
@@ -94,18 +50,13 @@ public class StudentController {
      * 시도 리스트
      */
     @RequestMapping("/sidoList")
-    public ArrayList<String> sidoList(Model model) throws Exception {
+        public String sidoList(Model model) throws Exception{
 
-        ArrayList<String> sidoList = new ArrayList<>();
+        ArrayList<String> sidoList = studentService.sidoList();
 
-        List<StudentResDto> list = studentService.getSido();
-
-        for (var i=0; i<list.size(); i++){
-            String sido = list.get(i).getSido();
-            sidoList.add(sido);
-        }
-        log.info("sido>>>>>>" + sidoList);
-        return sidoList;
+        model.addAttribute("sidoList", sidoList);
+        log.info("sidoList>>>>>>>" + sidoList);
+        return "main/operation/student";
     }
 
     /**
@@ -113,40 +64,33 @@ public class StudentController {
      */
     @RequestMapping(value = "/insert", method = RequestMethod.POST)
     @ResponseBody
-    public void insert(StudentReqDto studentReqDto) throws Exception{
+    public int insertStudent(StudentReqDto studentReqDto) throws Exception{
 
-        String seq = studentService.selectSeq();
-
-        if(seq != null){
-            studentService.updateSeq();
-
-        } else {
-            studentService.insertSeq();
-        }
-
-        seq = studentService.selectSeq();
-        log.info("seq>>>>>>>>" + seq);
-        String str = "0000000" + seq;
-        log.info("str>>>>>>>>" + str);
-
-        String studentCode = "A" + str.substring(str.length()-7);
-        log.info("studentCode>>>>>>>>" + studentCode);
-
+        String studentCode = studentService.selectStudentSeq();
         studentReqDto.setStudentCode(studentCode);
-        log.info("studentReqDto>>>>>>>>" + studentReqDto);
 
-        //학생 등록
-        studentService.register(studentReqDto);
+        String parentCode = studentService.selectParentSeq();
+        studentReqDto.setParentCode(parentCode);
 
-        //학생 아이디 발급 추가
-        String code = studentService.selectCode(studentReqDto);
-        log.info("code>>>>>>>>" + code);
+        int a = 0;
+        int b = 0;
+        int c = 0;
 
-        if(code == null){
-            log.info("!!!!!!!!!!!!!!!!!!!!!!!!");
-            String studentID = studentService.selectID();
-            log.info("studentID>>>>>>>>" + studentID);
+        try {
+            //MEM_Student
+            a = studentService.insertMemStudent(studentReqDto);
+
+            //MEM_Member
+            b = studentService.insertMemMember(studentReqDto);
+
+            //t_mem_parents
+            c = studentService.insertMemParents(studentReqDto);
+
+        } catch (Exception e) {
+            log.error("insertStudent Error : " + e.getMessage());
+            return -1;
         }
+        return a+b+c;
     }
 
     /**
@@ -154,8 +98,8 @@ public class StudentController {
      */
     @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
     @ResponseBody
-    public StudentResDto detail(StudentReqDto studentReqDto) throws Exception{
-        return studentService.getDetail(studentReqDto);
+    public StudentResDto detailStudent(StudentReqDto studentReqDto) throws Exception{
+        return studentService.detailStudent(studentReqDto);
     }
 
     /**
@@ -163,19 +107,8 @@ public class StudentController {
      */
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> update(@RequestParam Map<String, Object> param, Model model, HttpServletResponse response) throws Exception{
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        int updateStat = studentService.update(param);
-        if(updateStat == 1){
-            resultMap.put("result", true);
-
-        } else {
-            resultMap.put("result", false);
-        }
-        System.out.println("resultMap>>>>>>" + resultMap);
-        return resultMap;
+    public int updateStudent(StudentReqDto studentReqDto) throws Exception{
+        return studentService.updateStudent(studentReqDto);
     }
 
     /**
@@ -244,7 +177,7 @@ public class StudentController {
      */
     @RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> fileUpload(MultipartHttpServletRequest request) throws Exception {
+    public Map<String, Object> excelUpload(MultipartHttpServletRequest request) throws Exception {
 
         Map<String, Object> result = new HashMap<>();
         MultipartFile excelFile = request.getFile("excel_file");
@@ -254,7 +187,7 @@ public class StudentController {
             if(!excelFile.isEmpty()) {
                 
                 excelFile.transferTo(destFile);
-                studentService.fileUpload(destFile);    //엑셀 업로드
+                studentService.excelUpload(destFile);    //엑셀 업로드
                 destFile.delete();
                 
                 result.put("code", "SUCCESS");
@@ -270,5 +203,4 @@ public class StudentController {
         }
         return result;
     }
-
 }

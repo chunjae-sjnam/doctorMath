@@ -70,18 +70,19 @@
     <table border="1">
         <tr>
             <th>이름</th>
-            <td><input id="name_i" name="name_i" type="text"></td>
+            <td><input id="name_i" name="name_i" type="text" maxlength="10"></td>
         </tr>
         <tr>
             <th>아이디</th>
-            <td><input id="userId_i" name="userId_i" type="text"></td>
+            <td><input id="userId_i" name="userId_i" type="text" maxlength="20"></td>
         </tr>
         <tr>
             <th>연락처</th>
             <td><input id="tell_i" name="tell_i" type="text"></td>
         </tr>
     </table>
-    <button onclick="insertTeacher()" >등록</button>
+    <button type="button">취소</button>
+    <button type="button" onclick="insertTeacher();">저장</button>
 </div>
 
 

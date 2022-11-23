@@ -25,10 +25,10 @@
         }
 
         let postNum = document.getElementById("postNum_i").value;
-        let addr = document.getElementById("addr_i").value;
+        let addr1 = document.getElementById("addr1_i").value;
         let tell = document.getElementById("shtell_i").value;
         let birth = document.getElementById("birth_i").value;
-        let classStart = document.getElementById("classStart_i").value;
+        let classDate = document.getElementById("classDate_i").value;
         let memo = document.getElementById("memo_i").value;
 
         if(name == "") {
@@ -97,10 +97,10 @@
                 "school": school,
                 "email": email,
                 "postNum": postNum,
-                "addr": addr,
+                "addr1": addr1,
                 "tell": tell,
                 "birth": birth,
-                "classStart": classStart,
+                "classDate": classDate,
                 "memo": memo
             };
 
@@ -111,16 +111,15 @@
                 data: formData,
                 dataType:'json',
                 success:function (data){
-                    if(data.result) {
+
+                    if(data >= 4){
                         alert("저장되었습니다.");
                         location.href = "/operation/list";
+
                     } else {
                         alert("저장에 실패하였습니다.");
                         location.href = "/operation/list";
                     }
-                },
-                error: function (request,status,error){
-                    alert("error code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
                 }
             });
         }
@@ -148,7 +147,6 @@
             html += '<option value="4">4학년</option>';
             html += '<option value="5">5학년</option>';
             html += '<option value="6">6학년</option>';
-
         }
         $("#grade_i").append(html);
     }
@@ -159,18 +157,18 @@
 
         if(option == "direct"){ //직접 입력
             $("#email_direct_i").prop("disabled", false);
+
         } else {
             $("#email_direct_i").prop("disabled", true);
             $("#email_direct_i").val("");
         }
     }
     
-    //시도 리스트
-    function sidoList_i() {
-
+    //구군 리스트
+    function guList_i() {
         $.ajax({
             type: "POST",
-            url: '/operation/sidoList',
+            url: '/operation/guList',
             cache: false,
             success:function (data){
 
@@ -211,7 +209,7 @@
             });
 
             //수업 시작일
-            $('#classStart_i').datepicker({
+            $('#classDate_i').datepicker({
                 lang:'ko',
                 dateFormat: 'yy-mm-dd',
                 monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 텍스트
@@ -223,7 +221,7 @@
                 buttonImageOnly: true
             });
 
-            $('#classStart_i').keydown(function (event) {
+            $('#classDate_i').keydown(function (event) {
                 var key = event.charCode || event.keyCode || 0;
                 $text = $(this);
                 if (key !== 8 && key !== 9) {

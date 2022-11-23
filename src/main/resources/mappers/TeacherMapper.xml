@@ -19,6 +19,7 @@
           and mt.Status = 'S' -- 고정
           and mt.HakwonCode = #{hakwonCode}
         group by mt.TeacherCode, mm.UserID
+        order by mt.Credate desc
     </select>
 
     <!-- 선생님 상세정보 -->
@@ -53,5 +54,83 @@
         where 1=1
           and TeacherCode = #{code}
     </update>
+
+    <!-- 선생님 seq 조회 -->
+    <select id="selectSeq" parameterType="com.chunjae.doctormath.main.operation.student.dto.request.SeqReqDto" resultType="java.lang.String">
+        SELECT Seq
+        FROM COM_CodeSeq
+        WHERE MemberType = #{key}
+    </select>
+
+    <!-- 선생님 seq 수정 -->
+    <update id="updateSeq">
+        UPDATE COM_CodeSeq
+        SET Seq = Seq + 1
+        WHERE MemberType = #{key}
+    </update>
+
+    <!-- 선생님 seq 추가 -->
+    <insert id="insertSeq">
+        INSERT INTO COM_CodeSeq
+        VALUES (#{key}, 1)
+    </insert>
+
+    <!-- 선생님 등록 : MEM_Member -->
+    <insert id="insertMemMemberTeacher" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherSaveReqDto">
+        INSERT INTO MEM_Member
+        (
+          Seq
+        , UserID
+        , Pwd
+        , Name
+        , SNS
+        , EmailYN
+        , Code
+        , SNSID
+        , MemberType
+        , CreDate
+        , HTell
+        )
+        VALUES
+        (
+          ( SELECT MAX(A.Seq)+1 FROM MEM_Member A)
+        , #{userId}
+        , '0000'
+        , #{name}
+        , ''
+        , 'Y'
+        , #{teacherCode}
+        , ''
+        , 'T'
+        , now()
+        , #{tell}
+        )
+    </insert>
+
+    <!-- 선생님 등록 : MEM_Teacher -->
+    <insert id="insertMemTeacher" parameterType="com.chunjae.doctormath.main.operation.teacher.dto.request.TeacherSaveReqDto">
+        INSERT INTO Mem_Teacher
+        (
+          TeacherCode
+        , Seq
+        , Name
+        , Auth
+        , HakwonCode
+        , MemberType
+        , Status
+        , CreDate
+        )
+        VALUES
+        (
+          #{teacherCode}
+        , ( SELECT MAX(A.Seq)+1 FROM Mem_Teacher A)
+        , #{name}
+        , #{auth}
+        , #{hakwonCode}
+        , 'T'
+        , 'S'
+        , now()
+        )
+    </insert>
 
 </mapper>

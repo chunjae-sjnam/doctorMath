@@ -13,6 +13,7 @@ public class StudentReqDto {
     private String hakwonCode;  //학원코드
     private String teacherCode; //교사코드
     private String studentCode; //학생코드
+    private String parentCode;  //학부모코드
     private String classCode;   //클래스코드
     private String condition;   //검색조건
     private String keyword;     //검색어
@@ -28,8 +29,10 @@ public class StudentReqDto {
     private String school;      //학교
     private String email;       //이메일
     private String postNum;     //우편번호
-    private String addr;        //주소
+    private String addr1;        //주소
     private String birth;       //생년월일
-    private String classStart;  //수업 시작일
+    private String classDate;   //수업 시작일
     private String memo;        //비고
+    private String userID;      //학생 ID
+    private String parentID;    //학부모 ID
 }
