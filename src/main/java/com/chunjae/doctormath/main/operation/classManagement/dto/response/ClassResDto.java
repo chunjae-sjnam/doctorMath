@@ -14,5 +14,7 @@ public class ClassResDto {
     private String mainTeacherName;    // 선생님이름
     private String subTeacherCode;    // 서브선생님 코드
     private String subTeacherName;    // 선생님이름
+    private String gradeCode;   // 학년코드
+    private String gradeName;   // 학년이름
 
 }

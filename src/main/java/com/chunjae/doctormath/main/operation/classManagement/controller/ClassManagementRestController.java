@@ -1,7 +1,9 @@
 package com.chunjae.doctormath.main.operation.classManagement.controller;
 
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto;
 import com.chunjae.doctormath.main.operation.classManagement.service.ClassManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +22,20 @@ public class ClassManagementRestController {
 
     // 클래스관리 목록
     @RequestMapping("list")
-    public List<ClassResDto> classManagementList(ClassReqDto classReqDto) {
-        return classManagementService.classManagementList(classReqDto);
+    public List<ClassResDto> classManagementList(ClassAcademyReqDto classAcademyReqDto) {
+        return classManagementService.classManagementList(classAcademyReqDto);
     }
 
+    // 팝업 - 학생선택 클래스 목록
+    @RequestMapping("classs-search-popup-list")
+    public ClassSearchListResDto classSearchPopupList(ClassAcademyReqDto classAcademyReqDto) {
+        return classManagementService.classSearchPopupList(classAcademyReqDto);
+    }
+
+    // 팝업 - 학생선택 클래스선택 - 학생목록
+    @RequestMapping("class-student-search-popup-list")
+    public ClassSearchListResDto classStudentSearchPopupList(ClassSeqReqDto classSeqReqDto) {
+        return classManagementService.classStudentSearchPopupList(classSeqReqDto);
+    }
 
 }

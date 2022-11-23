@@ -3,21 +3,47 @@
 <mapper namespace='com.chunjae.doctormath.main.operation.classManagement.mapper.ClassManagementMapper'>
 
     <!-- 클래스관리 목록 -->
-    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto"
+    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto">
         select
-             mc.Seq as seq
-            ,mc.ClassName as className
-            ,mc.StudentCnt as studentCount
-            ,mc.TeacherCode as mainTeacherCode
-            ,a.Name as mainTeacherName
-            ,mc.SubTeacherCode as subTeacherCode
-            ,b.Name as subTeacherName
+              mc.Seq as seq
+             ,mc.ClassName as className
+             ,mc.StudentCnt as studentCount
+             ,mc.TeacherCode as mainTeacherCode
+             ,a.Name as mainTeacherName
+             ,mc.SubTeacherCode as subTeacherCode
+             ,b.Name as subTeacherName
+             ,mc.Grade as gradeCode
+             ,cbc.CodeName as gradeName
         from MEM_Class mc
-                 left outer join Mem_Teacher a on mc.TeacherCode = a.TeacherCode
-                 left outer join Mem_Teacher b on mc.SubTeacherCode = b.TeacherCode
+            left outer join Mem_Teacher a on mc.TeacherCode = a.TeacherCode
+            left outer join Mem_Teacher b on mc.SubTeacherCode = b.TeacherCode
+            left outer join COM_BaseCode cbc on mc.Grade = cbc.Code1 and cbc.GubunSeq = 4
         where 1=1
-            and mc.HakwonCode = #{hakwonCode}
+          and mc.HakwonCode = #{hakwonCode}
+    </select>
+
+    <!-- 팝업 - 학생선택 클래스 목록 -->
+    <select id="classSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto">
+        select
+             Seq as seq
+            ,ClassName as className
+        from MEM_Class
+        where 1=1
+            and HakwonCode = #{hakwonCode}
+    </select>
+
+    <!-- 팝업 - 학생선택 클래스선택 - 학생목록 -->
+    <select id="classStudentSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassStudentSearchListResDto">
+        select
+             ms.StudentCode as studentCode
+            ,ms.Name as studentName
+        from MEM_Class_StudentList mcsl
+            inner join MEM_Student ms on mcsl.StudentCode = ms.StudentCode
+        where 1=1
+            and mcsl.ClassSeq = #{seq}
     </select>
 
 </mapper>

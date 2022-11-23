@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ClassReqDto {
+public class ClassAcademyReqDto {
 
     private final String hakwonCode;
 
