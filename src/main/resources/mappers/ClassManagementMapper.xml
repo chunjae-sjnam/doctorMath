@@ -3,7 +3,7 @@
 <mapper namespace='com.chunjae.doctormath.main.operation.classManagement.mapper.ClassManagementMapper'>
 
     <!-- 클래스관리 목록 -->
-    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassReqDto"
+    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto">
         select
             mc.Seq
