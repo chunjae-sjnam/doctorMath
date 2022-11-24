@@ -3,7 +3,7 @@
 <mapper namespace='com.chunjae.doctormath.main.operation.classManagement.mapper.ClassManagementMapper'>
 
     <!-- 클래스관리 목록 -->
-    <select id="classManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
+    <select id="selectClassManagementList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto">
         select
             mc.Seq
@@ -25,7 +25,7 @@
     </select>
 
     <!-- 선생님 검색 -->
-    <select id="classSearchTeacherList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto"
+    <select id="selectClassSearchTeacherList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto">
         select
             TeacherCode AS teacherCode
@@ -40,7 +40,7 @@
     </select>
 
     <!-- 팝업 - 학생선택 클래스 목록 -->
-    <select id="classSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
+    <select id="selectClassSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto">
         select
              Seq as seq
@@ -51,7 +51,7 @@
     </select>
 
     <!-- 팝업 - 학생선택 클래스선택 - 학생목록 -->
-    <select id="classStudentSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto"
+    <select id="selectClassStudentSearchPopupList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto"
             resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassStudentSearchListResDto">
         select
              ms.StudentCode as studentCode
@@ -61,5 +61,84 @@
         where 1=1
             and mcsl.ClassSeq = #{seq}
     </select>
+
+    <!-- 학원 클래스의 학년 학생 수 -->
+    <select id="selectClassSchoolGradeCount" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSchoolGradeReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSchoolGradeCountResDto">
+        select
+            count(*) as schoolGradeCount
+        from MEM_Student
+        where 1=1
+          and HakwonCode = #{hakwonCode}
+          and Status = 'S'  -- 고정
+          and Curri = #{schoolCode}
+    </select>
+
+    <!-- 학원 클래스의 학년 학생목록 -->
+    <select id="selectClassSchoolGradeList" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSchoolGradeReqDto"
+            resultType="com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSchoolGradeListResDto">
+        select
+             StudentCode as studentCode
+            ,Name as studentName
+        from MEM_Student
+        where 1=1
+            and HakwonCode = #{hakwonCode}
+            and Status = 'S'
+            and CONCAT(Curri, Grade) = #{schoolCode}
+    </select>
+
+    <!-- 클래스 등록 -->
+    <insert id="insertMemClass" useGeneratedKeys="true" keyProperty="seq"
+            parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSchoolGradeReqDto">
+        INSERT INTO MEM_Class
+        (
+             ClassName
+            ,Curri
+            ,Grade
+            ,StudentCnt
+            ,HakwonCode
+            ,CreDate
+            ,TeacherCode
+            ,SubTeacherCode
+        ) VALUES (
+             #{className}
+            ,#{curri}
+            ,#{Grade}
+            ,#{studentCnt}
+            ,#{hakwonCode}
+            ,now()
+            ,#{teacherCode}
+            ,#{subTeacherCode}
+        )
+    </insert>
+
+    <insert id="insertMemClassStudents" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassStudentAddReqDto">
+        INSERT INTO MEM_Class_StudentList
+        (
+             ClassSeq
+            ,StudentCode
+            ,CreDate
+        ) VALUES
+        <foreach collection="requests" item="a" separator=",">
+            (
+                 #{a.seq}
+                ,#{a.studentCode}
+                ,#{a.createDate}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertMemClassTeacher" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherAddReqDto">
+        INSERT INTO MEM_Class_TeacherList
+        (
+             ClassSeq
+            ,TeacherCode
+            ,CreDate
+        ) VALUES (
+             #{seq}
+            ,#{TeacherCode}
+            ,#{createDate}
+        )
+    </insert>
 
 </mapper>

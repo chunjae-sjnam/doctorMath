@@ -1,9 +1,8 @@
 package com.chunjae.doctormath.main.operation.classManagement.controller;
 
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassAcademyReqDto;
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassSeqReqDto;
-import com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherSearchReqDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.request.*;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassResDto;
+import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSchoolGradeListResDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassSearchListResDto;
 import com.chunjae.doctormath.main.operation.classManagement.dto.response.ClassTeacherSearchResDto;
 import com.chunjae.doctormath.main.operation.classManagement.service.ClassManagementService;
@@ -24,28 +23,43 @@ public class ClassManagementRestController {
 
     // 클래스관리 목록
     @RequestMapping("list")
-    public List<ClassResDto> classManagementList(ClassAcademyReqDto classAcademyReqDto) {
+    public List<ClassResDto> selectClassManagementList(ClassAcademyReqDto classAcademyReqDto) {
 
         //temp
         classAcademyReqDto.setHakwonCode("H1000000");
-        return classManagementService.classManagementList(classAcademyReqDto);
+        return classManagementService.selectClassManagementList(classAcademyReqDto);
     }
 
+    // -- 등록,수정 팝업을 열면서 ajax를 통해 아래의 데이터 호출 start --
     // 선생님 검색
     @RequestMapping("class-search-teacher-list")
-    public List<ClassTeacherSearchResDto> classSearchTeacherList(ClassTeacherSearchReqDto classTeacherSearchReqDto){
-        return classManagementService.classSearchTeacherList(classTeacherSearchReqDto);
+    public List<ClassTeacherSearchResDto> selectClassSearchTeacherList(ClassTeacherSearchReqDto classTeacherSearchReqDto){
+        return classManagementService.selectClassSearchTeacherList(classTeacherSearchReqDto);
     }
 
     // 팝업 - 학생선택 클래스 목록
-    @RequestMapping("classs-search-popup-list")
-    public ClassSearchListResDto classSearchPopupList(ClassAcademyReqDto classAcademyReqDto) {
-        return classManagementService.classSearchPopupList(classAcademyReqDto);
+    @RequestMapping("class-search-popup-list")
+    public List<ClassSearchListResDto> selectClassSearchPopupList(ClassAcademyReqDto classAcademyReqDto) {
+        return classManagementService.selectClassSearchPopupList(classAcademyReqDto);
     }
 
     // 팝업 - 학생선택 클래스선택 - 학생목록
     @RequestMapping("class-student-search-popup-list")
-    public ClassSearchListResDto classStudentSearchPopupList(ClassSeqReqDto classSeqReqDto) {
-        return classManagementService.classStudentSearchPopupList(classSeqReqDto);
+    public List<ClassSearchListResDto> selectClassStudentSearchPopupList(ClassSeqReqDto classSeqReqDto) {
+        return classManagementService.selectClassStudentSearchPopupList(classSeqReqDto);
     }
+
+    // 학원 클래스의 학년 학생목록
+    @RequestMapping("class-school-grade-list")
+    public List<ClassSchoolGradeListResDto> selectClassSchoolGradeList(ClassSchoolGradeReqDto classSchoolGradeReqDto) {
+        return classManagementService.selectClassSchoolGradeList(classSchoolGradeReqDto);
+    }
+    // -- 등록,수정 팝업을 열면서 ajax를 통해 아래의 데이터 호출 end --
+
+    @RequestMapping("insert-class")
+    private int insertMemClass(ClassAddReqDto classAddReqDto) {
+        return classManagementService.insertMemClass(classAddReqDto);
+    }
+
+
 }
