@@ -26,20 +26,20 @@ public class LogConfig {
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
-        log.info("method name ==> {}", method.getName());
+        log.trace("method name ==> {}", method.getName());
 
         Object[] args = joinPoint.getArgs();
 
         for(Object obj : args) {
             if (obj != null) {
-                log.info("type ==> {}", obj.getClass().getSimpleName());
-                log.info("value ==> {}", obj);
+                log.trace("type ==> {}", obj.getClass().getSimpleName());
+                log.trace("value ==> {}", obj);
             }
         }
     }
 
     @AfterReturning(value = "cut()", returning = "obj")
     public void afterReturn(Object obj) {
-        log.info("response ==> {}", obj);
+        log.trace("response ==> {}", obj);
     }
 }
