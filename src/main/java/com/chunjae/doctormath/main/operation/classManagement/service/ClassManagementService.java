@@ -53,7 +53,7 @@ public class ClassManagementService {
     @Transactional
     public int insertMemClass(ClassAddReqDto classAddReqDto) {
 
-        // ClassInsertTests에서 들어가는 데이터 테스트코드를 참조
+        // ClassInsertTests 에서 들어가는 데이터 테스트코드를 참조
         int insertMemClass = classManagementMapper.insertMemClass(classAddReqDto);  // MEM_Class 등록
 
         if (insertMemClass == 0 || classAddReqDto.getSeq() == 0 || classAddReqDto.getTeacherCode() == null) {

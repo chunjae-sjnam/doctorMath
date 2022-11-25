@@ -112,6 +112,7 @@
         )
     </insert>
 
+    <!-- 클래스에 소속된 학생등록 -->
     <insert id="insertMemClassStudents" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassStudentAddReqDto">
         INSERT INTO MEM_Class_StudentList
         (
@@ -128,6 +129,7 @@
         </foreach>
     </insert>
 
+    <!-- 클래스에 소속된 선생등록 -->
     <insert id="insertMemClassTeacher" parameterType="com.chunjae.doctormath.main.operation.classManagement.dto.request.ClassTeacherAddReqDto">
         INSERT INTO MEM_Class_TeacherList
         (

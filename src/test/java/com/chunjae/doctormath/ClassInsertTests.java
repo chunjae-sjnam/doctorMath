@@ -23,9 +23,9 @@ public class ClassInsertTests {
     void test() {
         List<ClassAddReqDto> dto = new ArrayList<>();
         // 테스트 케이스 데이터 (골라서 쓰자)
-        dto.add(new ClassAddReqDto(0, "className", "M", "1", "10", "H0000005", "T0000001", "H0000005", Arrays.asList(null)));
+        dto.add(new ClassAddReqDto(0, "className", "M", "1", "10", "H0000005", "T0000001", "H0000005", null));
         dto.add(new ClassAddReqDto(0, "className1", "E", "5", "2", "H0000005", "T0000001", "H0000005", Arrays.asList("S00000001", "S00000002", "S00000003")));
-        dto.add(new ClassAddReqDto(0, "className2", "M", "1", "10", "H0000005", "T0000001", "H0000005", Arrays.asList("S00000001", "S00000002", "S00000003")));
+        dto.add(new ClassAddReqDto(0, "className2", "H", "1", "4", "H0000005", "T0000001", "H0000005", Arrays.asList("S00000001", "S00000002", "S00000003")));
         dto.add(new ClassAddReqDto(0, "className4", "M", "1", "10", "H0000005", "T0000001", "H0000005", Arrays.asList("S00000001", "S00000002", "S00000003")));
 
         classManagementService.insertMemClass(dto.get(0));
